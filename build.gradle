@@ -1,0 +1,76 @@
+plugins {
+    id 'net.minecrell.licenser' version '0.2.1'
+}
+
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+apply plugin: 'java'
+
+import java.nio.channels.Channels
+import java.nio.channels.ReadableByteChannel
+import java.nio.file.Files
+
+targetCompatibility = '1.8'
+sourceCompatibility = '1.8'
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+def pluginName = 'AbilityAPI'
+def spigotBuildCommand = 'java -jar buildtools.jar --rev 1.10'
+def spigotJarName = 'spigot-1.10.2.jar'
+
+// Runs 'spigot' (if necessary), builds the plugin and moves it to the server plugin directory.
+task server(dependsOn: ['spigot', 'build']) << {
+    File buildJar = new File('./build/libs/' + pluginName + '.jar')
+    File plugins = new File('./server/plugins')
+    File pluginsJar = new File(plugins, pluginName + '.jar')
+
+    plugins.mkdirs()
+    Files.copy(new FileInputStream(buildJar), new FileOutputStream(pluginsJar))
+}
+
+// Downloads Spigot's BuildTools.jar, executes it, and uses the result as a library.
+task spigot << {
+    File tmp = new File('./tmp')
+    File server = new File('./server')
+    tmp.mkdirs()
+    server.mkdirs()
+
+    File tmpJar = new File(tmp, spigotJarName)
+    File serverJar = new File(server, spigotJarName)
+
+    if (serverJar.exists()) {
+        return // Spigot has already been downloaded. ;)
+    }
+
+    System.out.println('Downloading BuildTools.jar...')
+    try {
+        URL download = new URL('https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar')
+        ReadableByteChannel rbc = Channels.newChannel(download.openStream())
+        FileOutputStream fileOut = new FileOutputStream('./tmp/buildtools.jar')
+        fileOut.getChannel().transferFrom(rbc, 0, 1 << 24)
+        fileOut.flush()
+        fileOut.close()
+        rbc.close()
+    } catch (Exception e) {
+        throw new RuntimeException('Failed to download file!', e)
+    }
+
+    System.out.println('Building Spigot-1.10...')
+    Runtime rt = Runtime.getRuntime()
+    Process pr = rt.exec(spigotBuildCommand, null, tmp)
+    BufferedReader br = new BufferedReader(new InputStreamReader(pr.getInputStream()))
+    String line = null
+    while (pr.isAlive()) {
+        while ((line = br.readLine()) != null) {
+            System.out.println(line)
+        }
+        System.out.println('Built!')
+    }
+
+    Files.copy(new FileInputStream(tmpJar), new FileOutputStream(serverJar))
+    System.out.println('Cleaning up...')
+    delete 'tmp' // tmp.delete() never works for some reason? Q-Q
+}

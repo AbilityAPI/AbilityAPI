@@ -1,0 +1,8 @@
+.idea/
+abilityapi.iws
+abilityapi.ipr
+abilityapi.iml
+
+.gradle/
+build/
+tmp/
