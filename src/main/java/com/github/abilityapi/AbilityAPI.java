@@ -11,6 +11,24 @@
 
 package com.github.abilityapi;
 
-public class AbilityAPI {
-    //
+import org.bukkit.plugin.java.JavaPlugin;
+
+public class AbilityAPI extends JavaPlugin {
+
+    private static AbilityAPI instance;
+
+    public static AbilityAPI get() {
+        return instance;
+    }
+
+    @Override
+    public void onEnable() {
+        instance = this;
+    }
+
+    @Override
+    public void onDisable() {
+        instance = null;
+    }
+
 }
