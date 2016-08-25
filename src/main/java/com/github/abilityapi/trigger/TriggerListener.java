@@ -9,49 +9,32 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.abilityapi;
+package com.github.abilityapi.trigger;
 
-import com.github.abilityapi.test.TestAbilityProvider;
-import com.github.abilityapi.trigger.TriggerManager;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 
-public class AbilityAPI extends JavaPlugin {
+import static com.github.abilityapi.trigger.ActionType.*;
 
-    private static AbilityAPI instance;
+public class TriggerListener implements Listener {
 
-    private final AbilityRegistry abilityRegistry = new AbilityRegistry();
-    private final AbilityManager abilityManager = new AbilityManager();
-    private final TriggerManager triggerManager = new TriggerManager(this, abilityRegistry, abilityManager);
+    private final TriggerManager manager;
 
-    private final AbilityService abilityService = new AbilityService(this, abilityManager, triggerManager);
-
-    public static AbilityAPI get() {
-        return instance;
+    public TriggerListener(TriggerManager manager) {
+        this.manager = manager;
     }
 
-    public AbilityRegistry getRegistry() {
-        return abilityRegistry;
+    @EventHandler
+    public void onClick(PlayerInteractEvent event) {
+        manager.handle(event, CLICK);
     }
 
-    public AbilityManager getAbilityManager() {
-        return abilityManager;
-    }
-
-    public TriggerManager getTriggerManager() {
-        return triggerManager;
-    }
-
-    @Override
-    public void onEnable() {
-        instance = this;
-        abilityService.start();
-
-        abilityRegistry.register(new TestAbilityProvider());
-    }
-
-    @Override
-    public void onDisable() {
-        instance = null;
+    @EventHandler
+    public void onToggleShift(PlayerToggleSneakEvent event) {
+        ActionType type = event.isSneaking() ? SHIFT_DOWN : SHIFT_UP;
+        manager.handle(event, type);
     }
 
 }

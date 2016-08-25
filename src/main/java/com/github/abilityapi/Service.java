@@ -11,47 +11,10 @@
 
 package com.github.abilityapi;
 
-import com.github.abilityapi.test.TestAbilityProvider;
-import com.github.abilityapi.trigger.TriggerManager;
-import org.bukkit.plugin.java.JavaPlugin;
+public interface Service {
 
-public class AbilityAPI extends JavaPlugin {
+    void start();
 
-    private static AbilityAPI instance;
-
-    private final AbilityRegistry abilityRegistry = new AbilityRegistry();
-    private final AbilityManager abilityManager = new AbilityManager();
-    private final TriggerManager triggerManager = new TriggerManager(this, abilityRegistry, abilityManager);
-
-    private final AbilityService abilityService = new AbilityService(this, abilityManager, triggerManager);
-
-    public static AbilityAPI get() {
-        return instance;
-    }
-
-    public AbilityRegistry getRegistry() {
-        return abilityRegistry;
-    }
-
-    public AbilityManager getAbilityManager() {
-        return abilityManager;
-    }
-
-    public TriggerManager getTriggerManager() {
-        return triggerManager;
-    }
-
-    @Override
-    public void onEnable() {
-        instance = this;
-        abilityService.start();
-
-        abilityRegistry.register(new TestAbilityProvider());
-    }
-
-    @Override
-    public void onDisable() {
-        instance = null;
-    }
+    void stop();
 
 }

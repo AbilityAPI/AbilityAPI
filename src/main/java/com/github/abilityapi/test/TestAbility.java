@@ -9,49 +9,50 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.abilityapi;
+package com.github.abilityapi.test;
 
-import com.github.abilityapi.test.TestAbilityProvider;
+import com.github.abilityapi.Ability;
+import com.github.abilityapi.AbilityAPI;
+import com.github.abilityapi.trigger.ActionType;
 import com.github.abilityapi.trigger.TriggerManager;
-import org.bukkit.plugin.java.JavaPlugin;
+import com.github.abilityapi.trigger.sequence.Sequence;
+import org.bukkit.entity.Player;
 
-public class AbilityAPI extends JavaPlugin {
+public class TestAbility extends Ability {
 
-    private static AbilityAPI instance;
+    protected final Player player;
+    protected int ticks;
 
-    private final AbilityRegistry abilityRegistry = new AbilityRegistry();
-    private final AbilityManager abilityManager = new AbilityManager();
-    private final TriggerManager triggerManager = new TriggerManager(this, abilityRegistry, abilityManager);
+    public TestAbility(Player player) {
+        this.player = player;
 
-    private final AbilityService abilityService = new AbilityService(this, abilityManager, triggerManager);
+        AbilityAPI abilityAPI = AbilityAPI.get();
+        TriggerManager manager = abilityAPI.getTriggerManager();
 
-    public static AbilityAPI get() {
-        return instance;
-    }
-
-    public AbilityRegistry getRegistry() {
-        return abilityRegistry;
-    }
-
-    public AbilityManager getAbilityManager() {
-        return abilityManager;
-    }
-
-    public TriggerManager getTriggerManager() {
-        return triggerManager;
+        manager.addListener(() -> Sequence.builder()
+                .action(ActionType.CLICK)
+                .build())
+            .once(() -> player.sendMessage("Lemoncake!"));
     }
 
     @Override
-    public void onEnable() {
-        instance = this;
-        abilityService.start();
-
-        abilityRegistry.register(new TestAbilityProvider());
+    public long getExpireTicks() {
+        return 200;
     }
 
     @Override
-    public void onDisable() {
-        instance = null;
+    public void start() {
+        System.out.println("Ability - started!");
+    }
+
+    @Override
+    public void update() {
+        System.out.println("Ability - executed: " + ticks++);
+    }
+
+    @Override
+    public void stop() {
+        System.out.println("Ability - stopped!");
     }
 
 }

@@ -9,49 +9,27 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.abilityapi;
+package com.github.abilityapi.test;
 
-import com.github.abilityapi.test.TestAbilityProvider;
-import com.github.abilityapi.trigger.TriggerManager;
-import org.bukkit.plugin.java.JavaPlugin;
+import com.github.abilityapi.AbilityProvider;
+import com.github.abilityapi.trigger.ActionType;
+import com.github.abilityapi.trigger.Trigger;
+import com.github.abilityapi.trigger.sequence.Sequence;
+import org.bukkit.entity.Player;
 
-public class AbilityAPI extends JavaPlugin {
+public class TestAbilityProvider implements AbilityProvider<TestAbility> {
 
-    private static AbilityAPI instance;
-
-    private final AbilityRegistry abilityRegistry = new AbilityRegistry();
-    private final AbilityManager abilityManager = new AbilityManager();
-    private final TriggerManager triggerManager = new TriggerManager(this, abilityRegistry, abilityManager);
-
-    private final AbilityService abilityService = new AbilityService(this, abilityManager, triggerManager);
-
-    public static AbilityAPI get() {
-        return instance;
-    }
-
-    public AbilityRegistry getRegistry() {
-        return abilityRegistry;
-    }
-
-    public AbilityManager getAbilityManager() {
-        return abilityManager;
-    }
-
-    public TriggerManager getTriggerManager() {
-        return triggerManager;
+    @Override
+    public Trigger getTrigger() {
+        return () -> Sequence.builder()
+                .action(ActionType.CLICK)
+                .condition((player, type) -> player.isSneaking())
+                .build();
     }
 
     @Override
-    public void onEnable() {
-        instance = this;
-        abilityService.start();
-
-        abilityRegistry.register(new TestAbilityProvider());
-    }
-
-    @Override
-    public void onDisable() {
-        instance = null;
+    public TestAbility createInstance(Player player) {
+        return new TestAbility(player);
     }
 
 }

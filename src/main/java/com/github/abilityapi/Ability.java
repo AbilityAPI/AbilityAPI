@@ -11,47 +11,20 @@
 
 package com.github.abilityapi;
 
-import com.github.abilityapi.test.TestAbilityProvider;
-import com.github.abilityapi.trigger.TriggerManager;
-import org.bukkit.plugin.java.JavaPlugin;
+public abstract class Ability {
 
-public class AbilityAPI extends JavaPlugin {
+    protected long startMillis = System.currentTimeMillis();
 
-    private static AbilityAPI instance;
+    public abstract long getExpireTicks();
 
-    private final AbilityRegistry abilityRegistry = new AbilityRegistry();
-    private final AbilityManager abilityManager = new AbilityManager();
-    private final TriggerManager triggerManager = new TriggerManager(this, abilityRegistry, abilityManager);
+    public abstract void start();
 
-    private final AbilityService abilityService = new AbilityService(this, abilityManager, triggerManager);
+    public abstract void update();
 
-    public static AbilityAPI get() {
-        return instance;
-    }
+    public abstract void stop();
 
-    public AbilityRegistry getRegistry() {
-        return abilityRegistry;
-    }
-
-    public AbilityManager getAbilityManager() {
-        return abilityManager;
-    }
-
-    public TriggerManager getTriggerManager() {
-        return triggerManager;
-    }
-
-    @Override
-    public void onEnable() {
-        instance = this;
-        abilityService.start();
-
-        abilityRegistry.register(new TestAbilityProvider());
-    }
-
-    @Override
-    public void onDisable() {
-        instance = null;
+    public boolean hasExpired() {
+        return System.currentTimeMillis() > startMillis + getExpireTicks() * 50;
     }
 
 }

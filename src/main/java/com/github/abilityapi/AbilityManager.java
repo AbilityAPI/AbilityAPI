@@ -11,47 +11,38 @@
 
 package com.github.abilityapi;
 
-import com.github.abilityapi.test.TestAbilityProvider;
-import com.github.abilityapi.trigger.TriggerManager;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.entity.Player;
 
-public class AbilityAPI extends JavaPlugin {
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
-    private static AbilityAPI instance;
+public class AbilityManager {
 
-    private final AbilityRegistry abilityRegistry = new AbilityRegistry();
-    private final AbilityManager abilityManager = new AbilityManager();
-    private final TriggerManager triggerManager = new TriggerManager(this, abilityRegistry, abilityManager);
+    private final Map<Player, Ability> executing = new HashMap<>();
 
-    private final AbilityService abilityService = new AbilityService(this, abilityManager, triggerManager);
+    public void execute(Player player, AbilityProvider provider) {
+        Ability ability = provider.createInstance(player);
+        ability.start();
 
-    public static AbilityAPI get() {
-        return instance;
+        executing.put(player, ability);
     }
 
-    public AbilityRegistry getRegistry() {
-        return abilityRegistry;
+    public void checkExpire() {
+        Iterator<Ability> it = executing.values().iterator();
+        while (it.hasNext()) {
+            Ability ability = it.next();
+            if (ability.hasExpired()) {
+                ability.stop();
+                it.remove();
+            }
+        }
     }
 
-    public AbilityManager getAbilityManager() {
-        return abilityManager;
-    }
-
-    public TriggerManager getTriggerManager() {
-        return triggerManager;
-    }
-
-    @Override
-    public void onEnable() {
-        instance = this;
-        abilityService.start();
-
-        abilityRegistry.register(new TestAbilityProvider());
-    }
-
-    @Override
-    public void onDisable() {
-        instance = null;
+    public void updateAll() {
+        for (Ability ability : executing.values()) {
+            ability.update();
+        }
     }
 
 }

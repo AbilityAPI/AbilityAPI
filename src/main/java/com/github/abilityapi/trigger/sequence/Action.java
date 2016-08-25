@@ -9,49 +9,52 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.abilityapi;
+package com.github.abilityapi.trigger.sequence;
 
-import com.github.abilityapi.test.TestAbilityProvider;
-import com.github.abilityapi.trigger.TriggerManager;
-import org.bukkit.plugin.java.JavaPlugin;
+import com.github.abilityapi.trigger.ActionType;
 
-public class AbilityAPI extends JavaPlugin {
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Optional;
 
-    private static AbilityAPI instance;
+public class Action {
 
-    private final AbilityRegistry abilityRegistry = new AbilityRegistry();
-    private final AbilityManager abilityManager = new AbilityManager();
-    private final TriggerManager triggerManager = new TriggerManager(this, abilityRegistry, abilityManager);
+    private ActionType type;
+    private Collection<Condition> conditions = new ArrayList<>();
+    private Collection<ActionType> cancelTypes = new ArrayList<>();
+    private Optional<Integer> delay = Optional.empty();
+    private Optional<Integer> expire = Optional.empty();
 
-    private final AbilityService abilityService = new AbilityService(this, abilityManager, triggerManager);
-
-    public static AbilityAPI get() {
-        return instance;
+    public Action(ActionType type) {
+        this.type = type;
     }
 
-    public AbilityRegistry getRegistry() {
-        return abilityRegistry;
+    public ActionType getType() {
+        return type;
     }
 
-    public AbilityManager getAbilityManager() {
-        return abilityManager;
+    public Collection<Condition> getConditions() {
+        return conditions;
     }
 
-    public TriggerManager getTriggerManager() {
-        return triggerManager;
+    public Collection<ActionType> getCancelTypes() {
+        return cancelTypes;
     }
 
-    @Override
-    public void onEnable() {
-        instance = this;
-        abilityService.start();
-
-        abilityRegistry.register(new TestAbilityProvider());
+    public Optional<Integer> getDelay() {
+        return delay;
     }
 
-    @Override
-    public void onDisable() {
-        instance = null;
+    public Optional<Integer> getExpire() {
+        return expire;
+    }
+
+    public void setDelay(int delay) {
+        this.delay = Optional.of(delay);
+    }
+
+    public void setExpire(int expire) {
+        this.expire = Optional.of(expire);
     }
 
 }

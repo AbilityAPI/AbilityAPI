@@ -11,47 +11,40 @@
 
 package com.github.abilityapi;
 
-import com.github.abilityapi.test.TestAbilityProvider;
+import com.github.abilityapi.trigger.TriggerListener;
 import com.github.abilityapi.trigger.TriggerManager;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
-public class AbilityAPI extends JavaPlugin {
+public class AbilityService implements Service {
 
-    private static AbilityAPI instance;
+    private final JavaPlugin plugin;
+    private final AbilityManager abilityManager;
+    private final TriggerManager triggerManager;
 
-    private final AbilityRegistry abilityRegistry = new AbilityRegistry();
-    private final AbilityManager abilityManager = new AbilityManager();
-    private final TriggerManager triggerManager = new TriggerManager(this, abilityRegistry, abilityManager);
-
-    private final AbilityService abilityService = new AbilityService(this, abilityManager, triggerManager);
-
-    public static AbilityAPI get() {
-        return instance;
-    }
-
-    public AbilityRegistry getRegistry() {
-        return abilityRegistry;
-    }
-
-    public AbilityManager getAbilityManager() {
-        return abilityManager;
-    }
-
-    public TriggerManager getTriggerManager() {
-        return triggerManager;
+    public AbilityService(JavaPlugin plugin, AbilityManager abilityManager, TriggerManager triggerManager) {
+        this.plugin = plugin;
+        this.abilityManager = abilityManager;
+        this.triggerManager = triggerManager;
     }
 
     @Override
-    public void onEnable() {
-        instance = this;
-        abilityService.start();
+    public void start() {
+        Bukkit.getPluginManager().registerEvents(new TriggerListener(triggerManager), plugin);
 
-        abilityRegistry.register(new TestAbilityProvider());
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                triggerManager.checkExpire();
+
+                abilityManager.updateAll();
+                abilityManager.checkExpire();
+            }
+        }.runTaskTimer(plugin, 0, 1);
     }
 
     @Override
-    public void onDisable() {
-        instance = null;
-    }
+    public void stop() {}
 
 }
