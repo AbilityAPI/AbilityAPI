@@ -14,6 +14,12 @@ package com.github.abilityapi.listener;
 import com.github.abilityapi.Ability;
 import com.github.abilityapi.trigger.Trigger;
 
+/**
+ * A class that allows Abilities to register Triggers to Runnables after the initial Trigger.
+ * @see Ability
+ * @see Trigger
+ * @see ListenerRunnable
+ */
 public class AbilityListener {
 
     private final Ability ability;
@@ -30,16 +36,36 @@ public class AbilityListener {
         this.trigger = trigger;
     }
 
+    /**
+     * Set the "run" runnable of this listener, to be executed every time the Trigger completes.
+     * @see ListenerRunnable
+     * @see Trigger
+     *
+     * @param runnable The ListenerRunnable instance to run.
+     * @return This class instance for chain-building.
+     */
     public AbilityListener run(ListenerRunnable runnable) {
         this.runnableRun = runnable;
         return this;
     }
 
+    /**
+     * Set the "once" runnable of this listener, to be executed ONCE when the Trigger completes. If the Trigger
+     * completes a second or third (or fourth...) time, it will be ignored.
+     * @see ListenerRunnable
+     * @see Trigger
+     *
+     * @param runnable The ListenerRunnable instance to run.
+     * @return This class instance for chain-building.
+     */
     public AbilityListener once(ListenerRunnable runnable) {
         this.runnableOnce = runnable;
         return this;
     }
 
+    /**
+     * Attempt to run both the "run" and "once" runnables of this class. Intended for internal use.
+     */
     public void execute() {
         // if runnable exists AND runnable returned "cancel"
         if (runnableRun != null && runnableRun.run()) {

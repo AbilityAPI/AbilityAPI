@@ -17,12 +17,19 @@ import java.util.List;
 
 public class AbilityRegistry {
 
+    // TODO: Collections.syncronizedList(...) likely unnecessary (and useless for desired purpose).
     private List<AbilityProvider> providers = Collections.synchronizedList(new ArrayList<>());
 
+    /**
+     * Register this AbilityProvider to the registry.
+     */
     public void register(AbilityProvider provider) {
         providers.add(provider);
     }
 
+    /**
+     * @return All currently registered AbilityProviders. Intended for internal use.
+     */
     public List<AbilityProvider> getProviders() {
         return providers;
     }

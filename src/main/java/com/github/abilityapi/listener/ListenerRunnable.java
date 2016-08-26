@@ -13,6 +13,10 @@ package com.github.abilityapi.listener;
 
 public interface ListenerRunnable {
 
+    /**
+     * @return true if the surrounding AbilityListener should be cancelled.
+     * @see AbilityListener
+     */
     boolean run();
 
 }
