@@ -21,9 +21,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class TriggerManager {
 
@@ -45,74 +48,40 @@ public class TriggerManager {
     }
 
     public <T extends PlayerEvent> void handle(T event, ActionType type) {
-        // handle current potentials
-        {
-            Iterator<Map.Entry<AbilityProvider, Sequence>> it = abilityPotentials.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry<AbilityProvider, Sequence> entry = it.next();
-                Sequence sequence = entry.getValue();
-
-                if (sequence.hasExpired()) {
-                    it.remove();
-                    continue;
-                }
-
-                sequence.next(event.getPlayer(), type);
-                if (sequence.hasFinished()) {
-                    abilityManager.execute(event.getPlayer(), entry.getKey());
-                    it.remove();
-                }
-            }
-        }
+        Player player = event.getPlayer();
 
         {
+            // handle current potentials for ability listeners
             Iterator<Map.Entry<AbilityListener, Sequence>> it = listenerPotentials.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry<AbilityListener, Sequence> entry = it.next();
-                Sequence sequence = entry.getValue();
-
-                if (sequence.hasExpired()) {
-                    it.remove();
-                    continue;
-                }
-
-                sequence.next(event.getPlayer(), type);
-                if (sequence.hasFinished()) {
-                    entry.getKey().execute();
-                    it.remove();
-                }
-            }
+            handleCurrent(player, type, it).forEach(AbilityListener::execute);
         }
 
-        // get new potentials
-        for (Ability ability : abilities.values()) {
-            for (AbilityListener listener : ability.getListeners()) {
-                Trigger trigger = listener.getTrigger();
-                Sequence sequence = trigger.createSequence();
-
-                if (sequence.next(event.getPlayer(), type)) {
-                    if (sequence.hasFinished()) {
-                        listener.execute();
-                        continue;
-                    }
-
-                    listenerPotentials.put(listener, sequence);
-                }
-            }
+        {
+            // handle current potentials for abilities
+            Iterator<Map.Entry<AbilityProvider, Sequence>> it = abilityPotentials.entrySet().iterator();
+            handleCurrent(player, type, it).forEach(provider -> abilityManager.execute(player, provider));
         }
 
-        for (AbilityProvider provider : registry.getProviders()) {
-            Trigger trigger = provider.getTrigger();
-            Sequence sequence = trigger.createSequence();
 
-            if (sequence.next(event.getPlayer(), type)) {
-                if (sequence.hasFinished()) {
-                    abilityManager.execute(event.getPlayer(), provider);
-                    continue;
-                }
+        {
+            // handle new potential triggers for ability listeners
+            Iterator<Map.Entry<AbilityListener, Sequence>> it = abilities.values().stream()
+                    .flatMap(ability -> ability.getListeners().stream())
+                    .collect(Collectors.toMap(listener -> listener, listener -> listener.getTrigger().createSequence()))
+                    .entrySet()
+                    .iterator();
+            handleNew(player, type, it, listenerPotentials)
+                    .forEach(AbilityListener::execute);
+        }
 
-                abilityPotentials.put(provider, sequence);
-            }
+        {
+            // handle new potential triggers for abilities
+            Iterator<Map.Entry<AbilityProvider, Sequence>> it = registry.getProviders().stream()
+                    .collect(Collectors.toMap(provider -> provider, provider -> provider.getTrigger().createSequence()))
+                    .entrySet()
+                    .iterator();
+            handleNew(player, type, it, abilityPotentials)
+                    .forEach(provider -> abilityManager.execute(player, provider));
         }
     }
 
@@ -120,7 +89,8 @@ public class TriggerManager {
         {
             Iterator<Sequence> it = abilityPotentials.values().iterator();
             while (it.hasNext()) {
-                if (it.next().hasExpired()) {
+                Sequence sequence = it.next();
+                if (sequence.isCancelled() || sequence.hasExpired()) {
                     it.remove();
                 }
             }
@@ -135,6 +105,50 @@ public class TriggerManager {
                 }
             }
         }
+    }
+
+    private <T> List<T> handleCurrent(Player player, ActionType type, Iterator<Map.Entry<T, Sequence>> it) {
+        List<T> finished = new ArrayList<>();
+
+        while (it.hasNext()) {
+            Map.Entry<T, Sequence> entry = it.next();
+            T key = entry.getKey();
+            Sequence sequence = entry.getValue();
+
+            if (sequence.isCancelled() || sequence.hasExpired()) {
+                it.remove();
+                continue;
+            }
+
+            if (sequence.next(player, type) && sequence.hasFinished()) {
+                finished.add(key);
+                it.remove();
+            }
+        }
+
+        return finished;
+    }
+
+    private <T> List<T> handleNew(Player player, ActionType type, Iterator<Map.Entry<T, Sequence>> it,
+                                      Map<T, Sequence> potentials) {
+        List<T> finished = new ArrayList<>();
+
+        while (it.hasNext()) {
+            Map.Entry<T, Sequence> entry = it.next();
+            T key = entry.getKey();
+            Sequence sequence = entry.getValue();
+
+            if (sequence.next(player, type)) {
+                if (sequence.hasFinished()) {
+                    finished.add(key);
+                    continue;
+                }
+
+                potentials.put(key, sequence);
+            }
+        }
+
+        return finished;
     }
 
 }
