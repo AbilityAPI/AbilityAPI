@@ -11,9 +11,16 @@
 
 package com.github.abilityapi;
 
+import com.github.abilityapi.listener.AbilityListener;
+import com.github.abilityapi.trigger.Trigger;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 public abstract class Ability {
 
     protected long startMillis = System.currentTimeMillis();
+    private List<AbilityListener> listeners = new CopyOnWriteArrayList<>();
 
     public abstract long getExpireTicks();
 
@@ -25,6 +32,17 @@ public abstract class Ability {
 
     public boolean hasExpired() {
         return System.currentTimeMillis() > startMillis + getExpireTicks() * 50;
+    }
+
+    public AbilityListener addListener(Trigger trigger) {
+        AbilityListener listener = new AbilityListener(this, trigger);
+        listeners.add(listener);
+
+        return listener;
+    }
+
+    public List<AbilityListener> getListeners() {
+        return listeners;
     }
 
 }

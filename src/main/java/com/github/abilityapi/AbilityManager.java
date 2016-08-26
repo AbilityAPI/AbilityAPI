@@ -45,4 +45,8 @@ public class AbilityManager {
         }
     }
 
+    public Map<Player, Ability> getExecuting() {
+        return executing;
+    }
+
 }

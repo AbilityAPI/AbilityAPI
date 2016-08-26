@@ -9,28 +9,10 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.abilityapi.test;
+package com.github.abilityapi.listener;
 
-import com.github.abilityapi.AbilityProvider;
-import com.github.abilityapi.trigger.ActionType;
-import com.github.abilityapi.trigger.Trigger;
-import com.github.abilityapi.trigger.TriggerManager;
-import com.github.abilityapi.trigger.sequence.Sequence;
-import org.bukkit.entity.Player;
+public interface ListenerRunnable {
 
-public class TestAbilityProvider implements AbilityProvider<TestAbility> {
-
-    @Override
-    public Trigger getTrigger() {
-        return () -> Sequence.builder()
-                .action(ActionType.CLICK)
-                .condition((player, type) -> player.isSneaking())
-                .build();
-    }
-
-    @Override
-    public TestAbility createInstance(Player player) {
-        return new TestAbility(player);
-    }
+    boolean run();
 
 }

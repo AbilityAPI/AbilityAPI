@@ -26,13 +26,13 @@ public class TestAbility extends Ability {
     public TestAbility(Player player) {
         this.player = player;
 
-        AbilityAPI abilityAPI = AbilityAPI.get();
-        TriggerManager manager = abilityAPI.getTriggerManager();
-
-        manager.addListener(() -> Sequence.builder()
+        addListener(() -> Sequence.builder()
                 .action(ActionType.CLICK)
                 .build())
-            .once(() -> player.sendMessage("Lemoncake!"));
+            .once(() -> {
+                player.sendMessage("Lemoncake!");
+                return true;
+            });
     }
 
     @Override
