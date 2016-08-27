@@ -47,19 +47,19 @@ public class TriggerManager {
         this.abilities = abilityManager.getExecuting();
     }
 
-    public <T extends PlayerEvent> void handle(T event, ActionType type) {
+    public <T extends PlayerEvent> void handle(T event) {
         Player player = event.getPlayer();
 
         {
             // handle current potentials for ability listeners
             Iterator<Map.Entry<AbilityListener, Sequence>> it = listenerPotentials.entrySet().iterator();
-            handleCurrent(player, type, it).forEach(AbilityListener::execute);
+            handleCurrent(player, event, it).forEach(AbilityListener::execute);
         }
 
         {
             // handle current potentials for abilities
             Iterator<Map.Entry<AbilityProvider, Sequence>> it = abilityPotentials.entrySet().iterator();
-            handleCurrent(player, type, it).forEach(provider -> abilityManager.execute(player, provider));
+            handleCurrent(player, event, it).forEach(provider -> abilityManager.execute(player, provider));
         }
 
 
@@ -70,7 +70,7 @@ public class TriggerManager {
                     .collect(Collectors.toMap(listener -> listener, listener -> listener.getTrigger().createSequence()))
                     .entrySet()
                     .iterator();
-            handleNew(player, type, it, listenerPotentials)
+            handleNew(player, event, it, listenerPotentials)
                     .forEach(AbilityListener::execute);
         }
 
@@ -80,7 +80,7 @@ public class TriggerManager {
                     .collect(Collectors.toMap(provider -> provider, provider -> provider.getTrigger().createSequence()))
                     .entrySet()
                     .iterator();
-            handleNew(player, type, it, abilityPotentials)
+            handleNew(player, event, it, abilityPotentials)
                     .forEach(provider -> abilityManager.execute(player, provider));
         }
     }
@@ -107,7 +107,7 @@ public class TriggerManager {
         }
     }
 
-    private <T> List<T> handleCurrent(Player player, ActionType type, Iterator<Map.Entry<T, Sequence>> it) {
+    private <T> List<T> handleCurrent(Player player, PlayerEvent event, Iterator<Map.Entry<T, Sequence>> it) {
         List<T> finished = new ArrayList<>();
 
         while (it.hasNext()) {
@@ -120,7 +120,7 @@ public class TriggerManager {
                 continue;
             }
 
-            if (sequence.next(player, type) && sequence.hasFinished()) {
+            if (sequence.next(player, event) && sequence.hasFinished()) {
                 finished.add(key);
                 it.remove();
             }
@@ -129,7 +129,7 @@ public class TriggerManager {
         return finished;
     }
 
-    private <T> List<T> handleNew(Player player, ActionType type, Iterator<Map.Entry<T, Sequence>> it,
+    private <T> List<T> handleNew(Player player, PlayerEvent event, Iterator<Map.Entry<T, Sequence>> it,
                                       Map<T, Sequence> potentials) {
         List<T> finished = new ArrayList<>();
 
@@ -138,7 +138,7 @@ public class TriggerManager {
             T key = entry.getKey();
             Sequence sequence = entry.getValue();
 
-            if (sequence.next(player, type)) {
+            if (sequence.next(player, event)) {
                 if (sequence.hasFinished()) {
                     finished.add(key);
                     continue;

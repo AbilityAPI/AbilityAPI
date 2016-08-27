@@ -12,11 +12,12 @@
 package com.github.abilityapi.test;
 
 import com.github.abilityapi.Ability;
-import com.github.abilityapi.AbilityAPI;
-import com.github.abilityapi.trigger.ActionType;
-import com.github.abilityapi.trigger.TriggerManager;
+import com.github.abilityapi.trigger.Actions;
 import com.github.abilityapi.trigger.sequence.Sequence;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 
 public class TestAbility extends Ability {
 
@@ -27,7 +28,7 @@ public class TestAbility extends Ability {
         this.player = player;
 
         addListener(() -> Sequence.builder()
-                .action(ActionType.CLICK)
+                .action(Actions.CLICK)
                 .build())
             .once(() -> {
                 player.sendMessage("Lemoncake!");

@@ -12,9 +12,8 @@
 package com.github.abilityapi.test;
 
 import com.github.abilityapi.AbilityProvider;
-import com.github.abilityapi.trigger.ActionType;
+import com.github.abilityapi.trigger.Actions;
 import com.github.abilityapi.trigger.Trigger;
-import com.github.abilityapi.trigger.TriggerManager;
 import com.github.abilityapi.trigger.sequence.Sequence;
 import org.bukkit.entity.Player;
 
@@ -23,8 +22,8 @@ public class TestAbilityProvider implements AbilityProvider<TestAbility> {
     @Override
     public Trigger getTrigger() {
         return () -> Sequence.builder()
-                .action(ActionType.CLICK)
-                .condition((player, type) -> player.isSneaking())
+                .action(Actions.CLICK)
+                .condition((player, event) -> player.isSneaking())
                 .build();
     }
 

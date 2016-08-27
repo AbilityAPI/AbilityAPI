@@ -11,8 +11,8 @@
 
 package com.github.abilityapi.trigger.sequence;
 
-import com.github.abilityapi.trigger.ActionType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerEvent;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -41,7 +41,7 @@ public class Sequence {
      * Test if all currently testable conditions are satisfied.
      * @return true or false, depending on if testable conditions were satisfied.
      */
-    public boolean next(Player player, ActionType type) {
+    public boolean next(Player player, PlayerEvent event) {
         Iterator<Action> it = actions.iterator();
 
         if (!it.hasNext()) {
@@ -50,13 +50,14 @@ public class Sequence {
 
         Action action = it.next();
 
-        if (action.getCancelTypes().contains(type)) {
-            cancelled = true;
-            return false;
-        }
+        // TODO
+//        if (action.getCancelTypes().contains(type)) {
+//            cancelled = true;
+//            return false;
+//        }
 
-        if (!action.getType().equals(type)) {
-            return false; // type wrong
+        if (!action.getEventClass().equals(event.getClass())) {
+            return false; // event wrong
         }
 
         if (action.getDelay().isPresent()) {
@@ -75,7 +76,7 @@ public class Sequence {
         Collection<Condition> conditions = action.getConditions();
 
         boolean result = !conditions.stream()
-                .filter(condition -> !condition.test(player, type))
+                .filter(condition -> !condition.test(player, event))
                 .findFirst()
                 .isPresent();
 

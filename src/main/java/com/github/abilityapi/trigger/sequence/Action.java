@@ -11,34 +11,54 @@
 
 package com.github.abilityapi.trigger.sequence;
 
-import com.github.abilityapi.trigger.ActionType;
+import org.bukkit.event.player.PlayerEvent;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 
 public class Action {
 
-    private ActionType type;
-    private Collection<Condition> conditions = new ArrayList<>();
-    private Collection<ActionType> cancelTypes = new ArrayList<>();
+    private final Class<? extends PlayerEvent> eventClazz;
+    private final Collection<Condition> conditions = new ArrayList<>();
+    private final Collection<Class<? extends PlayerEvent>> cancelEvents = new ArrayList<>();
     private Optional<Integer> delay = Optional.empty();
     private Optional<Integer> expire = Optional.empty();
 
-    public Action(ActionType type) {
-        this.type = type;
+    public <T extends PlayerEvent> Action(Class<T> eventClazz) {
+        this.eventClazz = eventClazz;
     }
 
-    public ActionType getType() {
-        return type;
+    public <T extends PlayerEvent> Action(Class<T> eventClazz, Condition<T> condition) {
+        this(eventClazz);
+        this.conditions.add(condition);
+    }
+
+    /**
+     * @return A new Action instance with the same values as this instance.
+     */
+    public Action copy() {
+        Action action = new Action(eventClazz);
+
+        action.conditions.addAll(conditions);
+        action.cancelEvents.addAll(cancelEvents);
+        action.delay = delay;
+        action.expire = expire;
+
+        return action;
+    }
+
+    public Class<? extends PlayerEvent> getEventClass() {
+        return eventClazz;
     }
 
     public Collection<Condition> getConditions() {
         return conditions;
     }
 
-    public Collection<ActionType> getCancelTypes() {
-        return cancelTypes;
+    public Collection<Class<? extends PlayerEvent>> getCancelEvents() {
+        return cancelEvents;
     }
 
     public Optional<Integer> getDelay() {

@@ -11,27 +11,42 @@
 
 package com.github.abilityapi.trigger;
 
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import com.github.abilityapi.trigger.sequence.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
-public class TriggerListener implements Listener {
+/**
+ * A few predefined actions to help with sequence building.
+ */
+public interface Actions {
 
-    private final TriggerManager manager;
+    /**
+     * Fired on any click type.
+     */
+    Action CLICK = new Action(PlayerInteractEvent.class);
 
-    public TriggerListener(TriggerManager manager) {
-        this.manager = manager;
-    }
+    /**
+     * Fired on left click, specifically. Both air and block.
+     */
+    Action LEFT_CLICK = new Action(PlayerInteractEvent.class, (player, event) ->
+        event.getAction() == org.bukkit.event.block.Action.LEFT_CLICK_AIR
+                || event.getAction() == org.bukkit.event.block.Action.LEFT_CLICK_BLOCK);
 
-    @EventHandler
-    public void onClick(PlayerInteractEvent event) {
-        manager.handle(event);
-    }
+    /**
+     * Fired on right click, specifically. Both air and block.
+     */
+    Action RIGHT_CLICK = new Action(PlayerInteractEvent.class, (player, event) ->
+        event.getAction() == org.bukkit.event.block.Action.RIGHT_CLICK_AIR
+                || event.getAction() == org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK);
 
-    @EventHandler
-    public void onToggleShift(PlayerToggleSneakEvent event) {
-        manager.handle(event);
-    }
+    /**
+     * Fired on shift down (start sneaking).
+     */
+    Action SHIFT_DOWN = new Action(PlayerToggleSneakEvent.class, (player, event) -> event.isSneaking());
+
+    /**
+     * Fired on shift up (stop sneaking).
+     */
+    Action SHIFT_UP = new Action(PlayerToggleSneakEvent.class, (player, event) -> !event.isSneaking());
 
 }

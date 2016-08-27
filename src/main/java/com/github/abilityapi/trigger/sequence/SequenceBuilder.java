@@ -11,7 +11,7 @@
 
 package com.github.abilityapi.trigger.sequence;
 
-import com.github.abilityapi.trigger.ActionType;
+import org.bukkit.event.player.PlayerEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,19 +31,39 @@ public class SequenceBuilder {
         return this;
     }
 
-    public SequenceBuilder action(ActionType type) {
-        current = new Action(type);
+    public SequenceBuilder action(Class<? extends PlayerEvent> clazz) {
+        current = new Action(clazz);
         actions.add(current);
 
         return this;
     }
 
-    public SequenceBuilder cancel(ActionType... types) {
+    public SequenceBuilder action(Action action) {
+        current = action.copy();
+        actions.add(current);
+
+        return this;
+    }
+
+    public SequenceBuilder cancel(Class<? extends PlayerEvent>... events) {
         if (current == null) {
-            throw new RuntimeException("A delay must be applied to an action.");
+            throw new RuntimeException("Cancel events can't be applied to the first action.");
         }
 
-        current.getCancelTypes().addAll(Arrays.asList(types));
+        current.getCancelEvents().addAll(Arrays.asList(events));
+        return this;
+    }
+
+    public SequenceBuilder cancel(Action... actions) {
+        if (current == null) {
+            throw new RuntimeException("Cancel events can't be applied to the first action.");
+        }
+
+        Arrays.asList(actions).forEach(action -> {
+            Class<? extends PlayerEvent> event = action.getEventClass();
+            current.getCancelEvents().add(event);
+        });
+
         return this;
     }
 
