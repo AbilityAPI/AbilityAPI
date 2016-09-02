@@ -18,7 +18,7 @@ import com.github.abilityapi.AbilityRegistry;
 import com.github.abilityapi.listener.AbilityListener;
 import com.github.abilityapi.trigger.sequence.Sequence;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.event.Event;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -47,9 +47,7 @@ public class TriggerManager {
         this.abilities = abilityManager.getExecuting();
     }
 
-    public <T extends PlayerEvent> void handle(T event) {
-        Player player = event.getPlayer();
-
+    public <T extends Event> void handle(Player player, T event) {
         {
             // handle current potentials for ability listeners
             Iterator<Map.Entry<AbilityListener, Sequence>> it = listenerPotentials.entrySet().iterator();
@@ -107,7 +105,7 @@ public class TriggerManager {
         }
     }
 
-    private <T> List<T> handleCurrent(Player player, PlayerEvent event, Iterator<Map.Entry<T, Sequence>> it) {
+    private <T> List<T> handleCurrent(Player player, Event event, Iterator<Map.Entry<T, Sequence>> it) {
         List<T> finished = new ArrayList<>();
 
         while (it.hasNext()) {
@@ -129,7 +127,7 @@ public class TriggerManager {
         return finished;
     }
 
-    private <T> List<T> handleNew(Player player, PlayerEvent event, Iterator<Map.Entry<T, Sequence>> it,
+    private <T> List<T> handleNew(Player player, Event event, Iterator<Map.Entry<T, Sequence>> it,
                                       Map<T, Sequence> potentials) {
         List<T> finished = new ArrayList<>();
 

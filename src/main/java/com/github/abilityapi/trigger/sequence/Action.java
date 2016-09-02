@@ -11,35 +11,35 @@
 
 package com.github.abilityapi.trigger.sequence;
 
-import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.event.Event;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 
-public class Action {
+public class Action<T extends Event> {
 
-    private final Class<? extends PlayerEvent> eventClazz;
-    private final Collection<Condition> conditions = new ArrayList<>();
-    private final Collection<Class<? extends PlayerEvent>> cancelEvents = new ArrayList<>();
+    private final Class<T> eventClazz;
+    private final Collection<Condition<T>> conditions = new ArrayList<>();
+    private final Collection<Class<? extends Event>> cancelEvents = new ArrayList<>();
     private Optional<Integer> delay = Optional.empty();
     private Optional<Integer> expire = Optional.empty();
 
-    public <T extends PlayerEvent> Action(Class<T> eventClazz) {
+    public Action(Class<T> eventClazz) {
         this.eventClazz = eventClazz;
     }
 
-    public <T extends PlayerEvent> Action(Class<T> eventClazz, Condition<T> condition) {
+    public Action(Class<T> eventClazz, Condition<T> initial) {
         this(eventClazz);
-        this.conditions.add(condition);
+        this.conditions.add(initial);
     }
 
     /**
      * @return A new Action instance with the same values as this instance.
      */
-    public Action copy() {
-        Action action = new Action(eventClazz);
+    public Action<T> copy() {
+        Action<T> action = new Action<>(eventClazz);
 
         action.conditions.addAll(conditions);
         action.cancelEvents.addAll(cancelEvents);
@@ -49,15 +49,15 @@ public class Action {
         return action;
     }
 
-    public Class<? extends PlayerEvent> getEventClass() {
+    public Class<T> getEventClass() {
         return eventClazz;
     }
 
-    public Collection<Condition> getConditions() {
+    public Collection<Condition<T>> getConditions() {
         return conditions;
     }
 
-    public Collection<Class<? extends PlayerEvent>> getCancelEvents() {
+    public Collection<Class<? extends Event>> getCancelEvents() {
         return cancelEvents;
     }
 

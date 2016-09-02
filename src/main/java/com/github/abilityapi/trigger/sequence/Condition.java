@@ -12,10 +12,11 @@
 package com.github.abilityapi.trigger.sequence;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerEvent;
 
 @FunctionalInterface
-public interface Condition<T extends PlayerEvent> {
+public interface Condition<T extends Event> {
 
     /**
      * @return Whether or not this Condition is satisfied.

@@ -26,12 +26,12 @@ public class TriggerListener implements Listener {
 
     @EventHandler
     public void onClick(PlayerInteractEvent event) {
-        manager.handle(event);
+        manager.handle(event.getPlayer(), event);
     }
 
     @EventHandler
     public void onToggleShift(PlayerToggleSneakEvent event) {
-        manager.handle(event);
+        manager.handle(event.getPlayer(), event);
     }
 
 }

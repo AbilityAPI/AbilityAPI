@@ -23,30 +23,30 @@ public interface Actions {
     /**
      * Fired on any click type.
      */
-    Action CLICK = new Action(PlayerInteractEvent.class);
+    Action<PlayerInteractEvent> CLICK = new Action<>(PlayerInteractEvent.class);
 
     /**
      * Fired on left click, specifically. Both air and block.
      */
-    Action LEFT_CLICK = new Action(PlayerInteractEvent.class, (player, event) ->
+    Action<PlayerInteractEvent> LEFT_CLICK = new Action<>(PlayerInteractEvent.class, (player, event) ->
         event.getAction() == org.bukkit.event.block.Action.LEFT_CLICK_AIR
                 || event.getAction() == org.bukkit.event.block.Action.LEFT_CLICK_BLOCK);
 
     /**
      * Fired on right click, specifically. Both air and block.
      */
-    Action RIGHT_CLICK = new Action(PlayerInteractEvent.class, (player, event) ->
+    Action<PlayerInteractEvent> RIGHT_CLICK = new Action<>(PlayerInteractEvent.class, (player, event) ->
         event.getAction() == org.bukkit.event.block.Action.RIGHT_CLICK_AIR
                 || event.getAction() == org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK);
 
     /**
      * Fired on shift down (start sneaking).
      */
-    Action SHIFT_DOWN = new Action(PlayerToggleSneakEvent.class, (player, event) -> event.isSneaking());
+    Action<PlayerToggleSneakEvent> SHIFT_DOWN = new Action<>(PlayerToggleSneakEvent.class, (player, event) -> event.isSneaking());
 
     /**
      * Fired on shift up (stop sneaking).
      */
-    Action SHIFT_UP = new Action(PlayerToggleSneakEvent.class, (player, event) -> !event.isSneaking());
+    Action<PlayerToggleSneakEvent> SHIFT_UP = new Action<>(PlayerToggleSneakEvent.class, (player, event) -> !event.isSneaking());
 
 }

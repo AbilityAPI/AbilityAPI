@@ -12,7 +12,7 @@
 package com.github.abilityapi.trigger.sequence;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.event.Event;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -41,7 +41,7 @@ public class Sequence {
      * Test if all currently testable conditions are satisfied.
      * @return true or false, depending on if testable conditions were satisfied.
      */
-    public boolean next(Player player, PlayerEvent event) {
+    public <T extends Event> boolean next(Player player, T event) {
         Iterator<Action> it = actions.iterator();
 
         if (!it.hasNext()) {
@@ -50,31 +50,42 @@ public class Sequence {
 
         Action action = it.next();
 
-        // TODO
 //        if (action.getCancelTypes().contains(type)) {
 //            cancelled = true;
 //            return false;
 //        }
 
-        if (!action.getEventClass().equals(event.getClass())) {
-            return false; // event wrong
+        if (action.getCancelEvents().contains(event.getClass())) {
+            cancelled = true;
+            return false;
         }
 
+//        if (!action.getType().equals(type)) {
+//            return false; // type wrong
+//        }
+
+        if (!action.getEventClass().equals(event.getClass())) {
+            return false;
+        }
+
+        //noinspection unchecked
+        Action<T> casted = (Action<T>) action;
+
         if (action.getDelay().isPresent()) {
-            if (System.currentTimeMillis() < last + action.getDelay().get() * 1000) {
+            // Optional#get now requires cast?
+            if (System.currentTimeMillis() < last + (int) action.getDelay().get() * 1000) {
                 cancelled = true;
                 return false; // condition failed because action delay hasn't completed.
             }
         }
 
         if (action.getExpire().isPresent()) {
-            if (System.currentTimeMillis() > last + action.getExpire().get() * 1000) {
+            if (System.currentTimeMillis() > last + (int) action.getExpire().get() * 1000) {
                 return false; // condition failed because action has expired.
             }
         }
 
-        Collection<Condition> conditions = action.getConditions();
-
+        Collection<Condition<T>> conditions = casted.getConditions();
         boolean result = !conditions.stream()
                 .filter(condition -> !condition.test(player, event))
                 .findFirst()
@@ -103,7 +114,7 @@ public class Sequence {
             return false; // never expires. never...
         }
 
-        return System.currentTimeMillis() > last + action.getExpire().get() * 1000;
+        return System.currentTimeMillis() > last + (int) action.getExpire().get() * 1000;
     }
 
     public boolean isCancelled() {

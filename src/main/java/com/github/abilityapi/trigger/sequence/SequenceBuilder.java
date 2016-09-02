@@ -11,6 +11,7 @@
 
 package com.github.abilityapi.trigger.sequence;
 
+import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerEvent;
 
 import java.util.ArrayList;
@@ -22,73 +23,35 @@ public class SequenceBuilder {
     private List<Action> actions = new ArrayList<>();
     private Action current;
 
-    public SequenceBuilder condition(Condition condition) {
-        if (current == null) {
-            throw new RuntimeException("A condition must be applied to an action.");
-        }
-
-        current.getConditions().add(condition);
-        return this;
-    }
-
-    public SequenceBuilder action(Class<? extends PlayerEvent> clazz) {
-        current = new Action(clazz);
+    /**
+     * Add the initial Action (created by class) of the Sequence being created.
+     *
+     * @return A new ActionBuilder for the created Action.
+     */
+    public <T extends Event> ActionBuilder<T> action(Class<T> clazz) {
+        current = new Action<>(clazz);
         actions.add(current);
 
-        return this;
+        //noinspection unchecked
+        return new ActionBuilder<>(this, current);
     }
 
-    public SequenceBuilder action(Action action) {
+    /**
+     * Add the initial Action of the Sequence being created.
+     *
+     * @return A new ActionBuilder for the created Action.
+     */
+    public <T extends Event> ActionBuilder<T> action(Action<T> action) {
         current = action.copy();
         actions.add(current);
 
-        return this;
+        //noinspection unchecked
+        return new ActionBuilder<>(this, current);
     }
 
-    public SequenceBuilder cancel(Class<? extends PlayerEvent>... events) {
-        if (current == null) {
-            throw new RuntimeException("Cancel events can't be applied to the first action.");
-        }
-
-        current.getCancelEvents().addAll(Arrays.asList(events));
-        return this;
-    }
-
-    public SequenceBuilder cancel(Action... actions) {
-        if (current == null) {
-            throw new RuntimeException("Cancel events can't be applied to the first action.");
-        }
-
-        Arrays.asList(actions).forEach(action -> {
-            Class<? extends PlayerEvent> event = action.getEventClass();
-            current.getCancelEvents().add(event);
-        });
-
-        return this;
-    }
-
-    public SequenceBuilder delay(int value) {
-        if (current == null) {
-            throw new RuntimeException("A delay must be applied to an action.");
-        }
-
-        if (actions.size() == 1) {
-            throw new RuntimeException("The first action cannot have a delay.");
-        }
-
-        current.setDelay(value);
-        return this;
-    }
-
-    public SequenceBuilder expire(int value) {
-        if (current == null) {
-            throw new RuntimeException("An expiration must be applied to an action.");
-        }
-
-        current.setExpire(value);
-        return this;
-    }
-
+    /**
+     * Build a new Sequence with the generated Actions list.
+     */
     public Sequence build() {
         boolean noExpire = actions.stream()
                 .skip(1)
