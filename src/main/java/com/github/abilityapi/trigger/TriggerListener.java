@@ -402,7 +402,7 @@ public class TriggerListener implements Listener {
     }
 
     @EventHandler
-    public void onFeedRegain(FoodLevelChangeEvent event) {
+    public void onFoodRegain(FoodLevelChangeEvent event) {
         if (event.getEntity() instanceof Player) {
             manager.handle((Player) event.getEntity(), event);
         }
