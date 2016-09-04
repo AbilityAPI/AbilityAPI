@@ -11,6 +11,7 @@
 
 package com.github.abilityapi;
 
+import com.github.abilityapi.metrics.MetricService;
 import com.github.abilityapi.test.TestAbilityProvider;
 import com.github.abilityapi.trigger.TriggerManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -24,6 +25,7 @@ public class AbilityAPI extends JavaPlugin {
     private final TriggerManager triggerManager = new TriggerManager(this, abilityRegistry, abilityManager);
 
     private final AbilityService abilityService = new AbilityService(this, abilityManager, triggerManager);
+    private final MetricService metricService = new MetricService(this);
 
     public static AbilityAPI get() {
         return instance;
@@ -45,6 +47,7 @@ public class AbilityAPI extends JavaPlugin {
     public void onEnable() {
         instance = this;
         abilityService.start();
+        metricService.start();
 
         abilityRegistry.register(new TestAbilityProvider());
     }
