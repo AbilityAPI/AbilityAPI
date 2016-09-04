@@ -11,7 +11,11 @@
 
 package com.github.abilityapi;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,11 +23,20 @@ import java.util.Map;
 
 public class AbilityManager {
 
+    private final JavaPlugin plugin;
     private final Map<Player, Ability> executing = new HashMap<>();
+
+    public AbilityManager(JavaPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     public void execute(Player player, AbilityProvider provider) {
         Ability ability = provider.createInstance(player);
         ability.start();
+
+        if (ability instanceof Listener) {
+            Bukkit.getPluginManager().registerEvents((Listener) ability, plugin);
+        }
 
         executing.put(player, ability);
     }
@@ -34,6 +47,11 @@ public class AbilityManager {
             Ability ability = it.next();
             if (ability.hasExpired()) {
                 ability.stop();
+
+                if (ability instanceof Listener) {
+                    HandlerList.unregisterAll((Listener) ability);
+                }
+
                 it.remove();
             }
         }

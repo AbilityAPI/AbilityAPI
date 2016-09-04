@@ -20,7 +20,7 @@ public class AbilityAPI extends JavaPlugin {
     private static AbilityAPI instance;
 
     private final AbilityRegistry abilityRegistry = new AbilityRegistry();
-    private final AbilityManager abilityManager = new AbilityManager();
+    private final AbilityManager abilityManager = new AbilityManager(this);
     private final TriggerManager triggerManager = new TriggerManager(this, abilityRegistry, abilityManager);
 
     private final AbilityService abilityService = new AbilityService(this, abilityManager, triggerManager);

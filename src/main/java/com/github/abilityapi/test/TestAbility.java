@@ -14,15 +14,16 @@ package com.github.abilityapi.test;
 import com.github.abilityapi.Ability;
 import com.github.abilityapi.trigger.Actions;
 import com.github.abilityapi.trigger.sequence.Sequence;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerToggleSprintEvent;
 
-public class TestAbility extends Ability {
+public class TestAbility extends Ability implements Listener {
 
     protected final Player player;
     protected int ticks;
+    protected boolean state;
 
     public TestAbility(Player player) {
         this.player = player;
@@ -30,9 +31,11 @@ public class TestAbility extends Ability {
         addListener(() -> Sequence.builder()
                 .action(Actions.CLICK)
                 .build())
-            .once(() -> {
-                player.sendMessage("Lemoncake!");
-                return true;
+            .run(() -> {
+                if (state) {
+                    player.sendMessage("Applepie!");
+                }
+                return false;
             });
     }
 
@@ -54,6 +57,11 @@ public class TestAbility extends Ability {
     @Override
     public void stop() {
         System.out.println("Ability - stopped!");
+    }
+
+    @EventHandler
+    public void onPlayerSprint(PlayerToggleSprintEvent event) {
+        state = true;
     }
 
 }
