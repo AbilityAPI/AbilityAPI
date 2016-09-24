@@ -74,7 +74,6 @@ public class ActionBuilder<T extends Event> {
     public ActionBuilder<T> cancel(Action<?>... actions) {
         Arrays.asList(actions).forEach(action -> {
             Class<? extends Event> clazz = action.getEventClass();
-            System.out.println(clazz.getName() + " added to cancels");
             this.action.getCancelEvents().add(clazz);
         });
         return this;
