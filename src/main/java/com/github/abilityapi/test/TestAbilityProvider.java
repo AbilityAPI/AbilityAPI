@@ -22,8 +22,10 @@ public class TestAbilityProvider implements AbilityProvider<TestAbility> {
     @Override
     public Trigger getTrigger() {
         return () -> Sequence.builder()
-                .action(Actions.CLICK)
-                .condition((player, event) -> player.isSneaking())
+                .action(Actions.SHIFT_DOWN)
+                .condition((player, event) -> player.getHealth() > 10)
+                .action(Actions.CLICK).delay(1).expire(5)
+                .cancel(Actions.SHIFT_UP)
                 .build();
     }
 

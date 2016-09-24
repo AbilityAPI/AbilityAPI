@@ -67,14 +67,15 @@ public class ActionBuilder<T extends Event> {
 
     /**
      * Add a list of Action event classes (taken from the Action instances list provided) which will cancel the Sequence
-     * to be created if this specific Action receivesthe event type while awaiting test.
+     * to be created if this specific Action receives the event type while awaiting test.
      *
      * @return This ActionBuilder instance.
      */
-    public ActionBuilder<T> cancel(Action<T>... actions) {
+    public ActionBuilder<T> cancel(Action<?>... actions) {
         Arrays.asList(actions).forEach(action -> {
-            Class<T> clazz = action.getEventClass();
-            action.getCancelEvents().add(clazz);
+            Class<? extends Event> clazz = action.getEventClass();
+            System.out.println(clazz.getName() + " added to cancels");
+            this.action.getCancelEvents().add(clazz);
         });
         return this;
     }

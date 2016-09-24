@@ -14,7 +14,6 @@ package com.github.abilityapi.trigger.sequence;
 import org.bukkit.event.Event;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 
