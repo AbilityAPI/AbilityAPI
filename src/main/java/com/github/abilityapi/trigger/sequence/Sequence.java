@@ -50,19 +50,10 @@ public class Sequence {
 
         Action action = it.next();
 
-//        if (action.getCancelTypes().contains(type)) {
-//            cancelled = true;
-//            return false;
-//        }
-
         if (action.getCancelEvents().contains(event.getClass())) {
             cancelled = true;
             return false;
         }
-
-//        if (!action.getType().equals(type)) {
-//            return false; // type wrong
-//        }
 
         if (!action.getEventClass().equals(event.getClass())) {
             return false;
@@ -72,7 +63,6 @@ public class Sequence {
         Action<T> casted = (Action<T>) action;
 
         if (action.getDelay().isPresent()) {
-            // Optional#get now requires cast?
             if (System.currentTimeMillis() < last + (int) action.getDelay().get() * 1000) {
                 cancelled = true;
                 return false; // condition failed because action delay hasn't completed.
