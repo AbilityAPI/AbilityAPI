@@ -113,12 +113,14 @@ public class TriggerManager {
             T key = entry.getKey();
             Sequence sequence = entry.getValue();
 
+            sequence.next(player, event);
+
             if (sequence.isCancelled() || sequence.hasExpired()) {
                 it.remove();
                 continue;
             }
 
-            if (sequence.next(player, event) && sequence.hasFinished()) {
+            if (sequence.hasFinished()) {
                 finished.add(key);
                 it.remove();
             }
@@ -136,14 +138,16 @@ public class TriggerManager {
             T key = entry.getKey();
             Sequence sequence = entry.getValue();
 
-            if (sequence.next(player, event)) {
-                if (sequence.hasFinished()) {
-                    finished.add(key);
-                    continue;
-                }
-
-                potentials.put(key, sequence);
+            if (!sequence.next(player, event)) {
+                continue;
             }
+
+            if (sequence.hasFinished()) {
+                finished.add(key);
+                continue;
+            }
+
+            potentials.put(key, sequence);
         }
 
         return finished;

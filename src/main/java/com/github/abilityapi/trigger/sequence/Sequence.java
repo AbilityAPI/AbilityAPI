@@ -39,7 +39,6 @@ public class Sequence {
 
     /**
      * Test if all currently testable conditions are satisfied.
-     * @return true or false, depending on if testable conditions were satisfied.
      */
     public <T extends Event> boolean next(Player player, T event) {
         Iterator<Action> it = actions.iterator();
@@ -50,43 +49,26 @@ public class Sequence {
 
         Action action = it.next();
 
-        if (action.getCancelEvents().contains(event.getClass())) {
-            cancelled = true;
-            return false;
-        }
+        if (!checkEvent(action, event)) {
+            if (!checkCancelledEvent(action, event)) {
+                cancelled = true;
+            }
 
-        if (!action.getEventClass().equals(event.getClass())) {
             return false;
         }
 
         //noinspection unchecked
         Action<T> casted = (Action<T>) action;
 
-        if (action.getDelay().isPresent()) {
-            if (System.currentTimeMillis() < last + (int) action.getDelay().get() * 1000) {
-                cancelled = true;
-                return false; // condition failed because action delay hasn't completed.
-            }
+        if (!checkDelay(casted)
+                || !checkExpire(casted)
+                || !checkConditions(casted, player, event)) {
+            return false;
         }
 
-        if (action.getExpire().isPresent()) {
-            if (System.currentTimeMillis() > last + (int) action.getExpire().get() * 1000) {
-                return false; // condition failed because action has expired.
-            }
-        }
-
-        Collection<Condition<T>> conditions = casted.getConditions();
-        boolean result = !conditions.stream()
-                .filter(condition -> !condition.test(player, event))
-                .findFirst()
-                .isPresent();
-
-        if (result) {
-            last = System.currentTimeMillis();
-            it.remove();
-        }
-
-        return result;
+        last = System.currentTimeMillis();
+        actions.remove(casted);
+        return true;
     }
 
     public boolean hasFinished() {
@@ -109,6 +91,40 @@ public class Sequence {
 
     public boolean isCancelled() {
         return cancelled;
+    }
+
+    // the below return true if the condition is met.
+
+    private boolean checkCancelledEvent(Action action, Event event) {
+        return !action.getCancelEvents().contains(event.getClass());
+    }
+
+    private boolean checkEvent(Action action, Event event) {
+        return action.getEventClass().equals(event.getClass());
+    }
+
+    private boolean checkDelay(Action action) {
+        long now = System.currentTimeMillis();
+        long delay = (int) action.getDelay().get() * 1000;
+
+        return now > last + delay;
+    }
+
+    private boolean checkExpire(Action action) {
+        long now = System.currentTimeMillis();
+        long expiry = (int) action.getExpire().get() * 1000;
+
+        return now < last + expiry;
+    }
+
+    private <T extends Event> boolean checkConditions(Action<T> action, Player player, T event) {
+        Collection<Condition<T>> conditions = action.getConditions();
+        boolean result = !conditions.stream()
+                .filter(condition -> !condition.test(player, event))
+                .findFirst()
+                .isPresent();
+
+        return result;
     }
 
 }
