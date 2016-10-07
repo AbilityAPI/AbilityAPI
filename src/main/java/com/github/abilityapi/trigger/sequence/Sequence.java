@@ -104,6 +104,10 @@ public class Sequence {
     }
 
     private boolean checkDelay(Action action) {
+        if (!action.getDelay().isPresent()) {
+            return true;
+        }
+
         long now = System.currentTimeMillis();
         long delay = (int) action.getDelay().get() * 1000;
 
@@ -111,6 +115,10 @@ public class Sequence {
     }
 
     private boolean checkExpire(Action action) {
+        if (!action.getExpire().isPresent()) {
+            return true;
+        }
+
         long now = System.currentTimeMillis();
         long expiry = (int) action.getExpire().get() * 1000;
 
