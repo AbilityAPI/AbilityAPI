@@ -9,14 +9,34 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.abilityapi.listener;
+package com.github.abilityapi.sequence;
 
-public interface ListenerRunnable {
+import com.github.abilityapi.ability.AbilityProvider;
+import com.github.abilityapi.user.User;
 
-    /**
-     * @return true if the surrounding AbilityListener should be cancelled.
-     * @see AbilityListener
-     */
-    boolean run();
+public abstract class SequenceBlueprint {
+
+    protected final AbilityProvider provider;
+
+    protected SequenceBlueprint(AbilityProvider provider) {
+        this.provider = provider;
+    }
+
+    public abstract Sequence create(User user);
+
+    public AbilityProvider getProvider() {
+        return provider;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object instanceof Sequence) {
+            return ((Sequence) object).getProvider().equals(provider);
+        } else if (object instanceof SequenceBlueprint) {
+            return ((SequenceBlueprint) object).getProvider().equals(provider);
+        }
+
+        return false;
+    }
 
 }

@@ -9,30 +9,17 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.abilityapi.test;
+package com.github.abilityapi.sequence;
 
-import com.github.abilityapi.ability.Ability;
-import com.github.abilityapi.ability.AbilityManager;
-import com.github.abilityapi.ability.AbilityProvider;
-import com.github.abilityapi.sequence.Sequence;
-import com.github.abilityapi.sequence.SequenceBlueprint;
-import com.github.abilityapi.sequence.SequenceBuilder;
-import com.github.abilityapi.sequence.action.Actions;
-import com.github.abilityapi.user.User;
+import java.util.ArrayList;
+import java.util.List;
 
-public class TestAbilityProvider implements AbilityProvider {
+public class SequenceHandle {
 
-    @Override
-    public SequenceBlueprint getSequence() {
-        return new SequenceBuilder()
-                .action(Actions.STOP_SNEAK)
-                .action(Actions.INTERACT_LEFT).expire(20 * 3)
-                .build(this);
-    }
+    private final List<Sequence> executing = new ArrayList<>();
 
-    @Override
-    public Ability createInstance(AbilityManager manager, Sequence sequence, User user) {
-        return new TestAbility(manager, user.getPlayer());
+    public List<Sequence> getExecuting() {
+        return executing;
     }
 
 }

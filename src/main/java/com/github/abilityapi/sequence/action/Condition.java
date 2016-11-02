@@ -9,42 +9,13 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.abilityapi;
+package com.github.abilityapi.sequence.action;
 
-import com.github.abilityapi.trigger.TriggerListener;
-import com.github.abilityapi.trigger.TriggerManager;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 
-public class AbilityService implements Service {
+public interface Condition<T extends Event> {
 
-    private final JavaPlugin plugin;
-    private final AbilityManager abilityManager;
-    private final TriggerManager triggerManager;
-
-    public AbilityService(JavaPlugin plugin, AbilityManager abilityManager, TriggerManager triggerManager) {
-        this.plugin = plugin;
-        this.abilityManager = abilityManager;
-        this.triggerManager = triggerManager;
-    }
-
-    @Override
-    public void start() {
-        Bukkit.getPluginManager().registerEvents(new TriggerListener(triggerManager), plugin);
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                triggerManager.checkExpire();
-
-                abilityManager.updateAll();
-                abilityManager.checkExpire();
-            }
-        }.runTaskTimer(plugin, 0, 1);
-    }
-
-    @Override
-    public void stop() {}
+    boolean test(Player player, T event);
 
 }
