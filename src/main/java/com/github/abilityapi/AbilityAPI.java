@@ -18,7 +18,6 @@ import com.github.abilityapi.sequence.SequenceInvoker;
 import com.github.abilityapi.sequence.SequenceManager;
 import com.github.abilityapi.services.AbilityService;
 import com.github.abilityapi.services.SequenceService;
-import com.github.abilityapi.test.TestAbilityProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -49,8 +48,6 @@ public class AbilityAPI extends JavaPlugin {
         services.add(abilityService);
         services.add(sequenceService);
         services.forEach(Service::start);
-
-        sequenceManager.register(new TestAbilityProvider());
     }
 
     @Override

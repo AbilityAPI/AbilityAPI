@@ -47,7 +47,6 @@ public final class User extends BaseUser {
                 .findFirst();
 
         if (!optional.isPresent()) {
-            System.out.println("NOT FOUND!");
             User user = new User(player);
             users.add(user);
             return user;
