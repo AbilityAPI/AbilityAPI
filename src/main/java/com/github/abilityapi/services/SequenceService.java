@@ -9,62 +9,46 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.abilityapi;
+package com.github.abilityapi.services;
 
+import com.github.abilityapi.Service;
+import com.github.abilityapi.sequence.SequenceListener;
+import com.github.abilityapi.sequence.SequenceManager;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-public class AbilityManager {
+public class SequenceService implements Service {
 
     private final JavaPlugin plugin;
-    private final Map<Player, Ability> executing = new HashMap<>();
+    private final SequenceManager sequenceManager;
+    private final SequenceListener listener;
 
-    public AbilityManager(JavaPlugin plugin) {
+    private BukkitTask task;
+
+    public SequenceService(JavaPlugin plugin, SequenceManager sequenceManager) {
         this.plugin = plugin;
+        this.sequenceManager = sequenceManager;
+        this.listener = new SequenceListener(sequenceManager);
     }
 
-    public void execute(Player player, AbilityProvider provider) {
-        Ability ability = provider.createInstance(player);
-        ability.start();
+    @Override
+    public void start() {
+        Bukkit.getPluginManager().registerEvents(listener, plugin);
 
-        if (ability instanceof Listener) {
-            Bukkit.getPluginManager().registerEvents((Listener) ability, plugin);
-        }
-
-        executing.put(player, ability);
-    }
-
-    public void checkExpire() {
-        Iterator<Ability> it = executing.values().iterator();
-        while (it.hasNext()) {
-            Ability ability = it.next();
-            if (ability.hasExpired()) {
-                ability.stop();
-
-                if (ability instanceof Listener) {
-                    HandlerList.unregisterAll((Listener) ability);
-                }
-
-                it.remove();
+        task = new BukkitRunnable() {
+            @Override
+            public void run() {
+                sequenceManager.cleanup();
             }
-        }
+        }.runTaskTimer(plugin, 0, 1);
     }
 
-    public void updateAll() {
-        for (Ability ability : executing.values()) {
-            ability.update();
-        }
-    }
-
-    public Map<Player, Ability> getExecuting() {
-        return executing;
+    @Override
+    public void stop() {
+        HandlerList.unregisterAll(listener);
     }
 
 }

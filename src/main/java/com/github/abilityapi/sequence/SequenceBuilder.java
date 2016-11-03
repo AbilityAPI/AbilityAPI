@@ -9,61 +9,44 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.abilityapi.trigger.sequence;
+package com.github.abilityapi.sequence;
 
+import com.github.abilityapi.ability.AbilityProvider;
+import com.github.abilityapi.sequence.action.Action;
+import com.github.abilityapi.sequence.action.ActionBlueprint;
+import com.github.abilityapi.sequence.action.ActionBuilder;
+import com.github.abilityapi.user.User;
 import org.bukkit.event.Event;
-import org.bukkit.event.player.PlayerEvent;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class SequenceBuilder {
 
     private List<Action> actions = new ArrayList<>();
-    private Action current;
 
-    /**
-     * Add the initial Action (created by class) of the Sequence being created.
-     *
-     * @return A new ActionBuilder for the created Action.
-     */
     public <T extends Event> ActionBuilder<T> action(Class<T> clazz) {
-        current = new Action<>(clazz);
-        actions.add(current);
-
-        //noinspection unchecked
-        return new ActionBuilder<>(this, current);
+        return action(new Action<>(clazz));
     }
 
-    /**
-     * Add the initial Action of the Sequence being created.
-     *
-     * @return A new ActionBuilder for the created Action.
-     */
+    public <T extends Event> ActionBuilder<T> action(ActionBlueprint<T> builder) {
+        return action(builder.create());
+    }
+
     public <T extends Event> ActionBuilder<T> action(Action<T> action) {
-        current = action.copy();
-        actions.add(current);
+        actions.add(action);
 
-        //noinspection unchecked
-        return new ActionBuilder<>(this, current);
+        ActionBuilder<T> builder = new ActionBuilder<>(this, action);
+        return builder;
     }
 
-    /**
-     * Build a new Sequence with the generated Actions list.
-     */
-    public Sequence build() {
-        boolean noExpire = actions.stream()
-                .skip(1)
-                .filter(action -> !action.getExpire().isPresent())
-                .findFirst()
-                .isPresent();
-
-        if (noExpire) {
-            throw new RuntimeException("All actions (apart from the first) must have an expire!");
-        }
-
-        return new Sequence(actions);
+    public SequenceBlueprint build(AbilityProvider provider) {
+        return new SequenceBlueprint(provider) {
+            @Override
+            public Sequence create(User user) {
+                return new Sequence(user, provider, actions);
+            }
+        };
     }
 
 }

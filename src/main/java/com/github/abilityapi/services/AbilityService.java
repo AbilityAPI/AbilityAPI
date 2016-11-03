@@ -9,29 +9,40 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.abilityapi;
+package com.github.abilityapi.services;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import com.github.abilityapi.Service;
+import com.github.abilityapi.ability.AbilityManager;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
-public class AbilityRegistry {
+public class AbilityService implements Service {
 
-    // TODO: Collections.syncronizedList(...) likely unnecessary (and useless for desired purpose).
-    private List<AbilityProvider> providers = Collections.synchronizedList(new ArrayList<>());
+    private final JavaPlugin plugin;
+    private final AbilityManager abilityManager;
 
-    /**
-     * Register this AbilityProvider to the registry.
-     */
-    public void register(AbilityProvider provider) {
-        providers.add(provider);
+    private BukkitTask task;
+
+    public AbilityService(JavaPlugin plugin, AbilityManager abilityManager) {
+        this.plugin = plugin;
+        this.abilityManager = abilityManager;
     }
 
-    /**
-     * @return All currently registered AbilityProviders. Intended for internal use.
-     */
-    public List<AbilityProvider> getProviders() {
-        return providers;
+    @Override
+    public void start() {
+        task = new BukkitRunnable() {
+            @Override
+            public void run() {
+                abilityManager.cleanup();
+                abilityManager.updateAll();
+            }
+        }.runTaskTimer(plugin, 0, 1);
+    }
+
+    @Override
+    public void stop() {
+        task.cancel();
     }
 
 }

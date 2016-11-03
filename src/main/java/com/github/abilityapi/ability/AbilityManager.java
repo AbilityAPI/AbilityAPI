@@ -9,40 +9,55 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.github.abilityapi;
+package com.github.abilityapi.ability;
 
-import com.github.abilityapi.listener.AbilityListener;
-import com.github.abilityapi.trigger.Trigger;
+import com.github.abilityapi.sequence.Sequence;
+import com.github.abilityapi.user.User;
+import org.bukkit.Bukkit;
+import org.bukkit.event.HandlerList;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public abstract class Ability {
+public class AbilityManager {
 
-    protected long startMillis = System.currentTimeMillis();
-    private List<AbilityListener> listeners = new CopyOnWriteArrayList<>();
+    private final List<Ability> abilities = new CopyOnWriteArrayList<>();
+    private final JavaPlugin plugin;
 
-    public abstract long getExpireTicks();
-
-    public abstract void start();
-
-    public abstract void update();
-
-    public abstract void stop();
-
-    public boolean hasExpired() {
-        return System.currentTimeMillis() > startMillis + getExpireTicks() * 50;
+    public AbilityManager(JavaPlugin plugin) {
+        this.plugin = plugin;
     }
 
-    public AbilityListener addListener(Trigger trigger) {
-        AbilityListener listener = new AbilityListener(this, trigger);
-        listeners.add(listener);
+    public void execute(User user, Sequence sequence, AbilityProvider provider) {
+        Ability ability = provider.createInstance(this, sequence, user);
+        abilities.add(ability);
 
-        return listener;
+        Bukkit.getPluginManager().registerEvents(ability, plugin);
+        ability.start();
     }
 
-    public List<AbilityListener> getListeners() {
-        return listeners;
+    public void updateAll() {
+        abilities.forEach(Ability::update);
+    }
+
+    public void cleanup() {
+        abilities.removeIf(ability -> {
+            if (ability.isExecuting()) {
+                return false;
+            }
+
+            HandlerList.unregisterAll(ability);
+            ability.stop();
+            return true;
+        });
+    }
+
+    public void stop(Ability ability) {
+        HandlerList.unregisterAll(ability);
+        ability.stop();
+
+        abilities.remove(ability);
     }
 
 }
