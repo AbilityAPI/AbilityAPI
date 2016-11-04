@@ -32,6 +32,7 @@ public class AbilityManager {
     public void execute(User user, Sequence sequence, AbilityProvider provider) {
         Ability ability = provider.createInstance(this, sequence, user);
         abilities.add(ability);
+        user.getAbilities().add(ability);
 
         Bukkit.getPluginManager().registerEvents(ability, plugin);
         ability.start();
@@ -54,10 +55,13 @@ public class AbilityManager {
     }
 
     public void stop(Ability ability) {
+        User user = ability.getUser();
+
         HandlerList.unregisterAll(ability);
         ability.stop();
 
         abilities.remove(ability);
+        user.getAbilities().remove(ability);
     }
 
 }

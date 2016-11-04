@@ -11,6 +11,8 @@
 
 package com.github.abilityapi.user;
 
+import com.github.abilityapi.ability.Ability;
+import com.github.abilityapi.ability.AbilityProvider;
 import com.github.abilityapi.sequence.SequenceHandle;
 import org.bukkit.entity.Player;
 
@@ -19,12 +21,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public final class User extends BaseUser {
 
     private static final List<User> users = new ArrayList<>();
-    private List<Object> instances = new ArrayList<>();
+    private final List<Object> instances = new ArrayList<>();
 
+    private final List<Ability> abilities = new ArrayList<>();
     private final SequenceHandle sequenceHandle = new SequenceHandle();
 
     public User(Player player) {
@@ -103,6 +107,31 @@ public final class User extends BaseUser {
         }
 
         return optional.get();
+    }
+
+    /**
+     * @param clazz The {@link Ability} class to filter for.
+     * @return True, if the {@link this#getAbilities(Class<? extends Ability>)} method returns any instances.
+     */
+    public boolean hasAbility(Class<? extends Ability> clazz) {
+        return !getAbilities().isEmpty();
+    }
+
+    /**
+     * @param clazz The {@link Ability} class to filter for.
+     * @return All executing {@link Ability} instances on this User, for a specific class.
+     */
+    public List<Ability> getAbilities(Class<? extends Ability> clazz) {
+        return abilities.stream()
+                .filter(ability -> ability.getClass().equals(clazz))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * @return All executing {@link Ability} instances on this User.
+     */
+    public List<Ability> getAbilities() {
+        return abilities;
     }
 
     public SequenceHandle getSequenceHandle() {
