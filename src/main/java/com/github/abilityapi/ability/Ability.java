@@ -11,16 +11,46 @@
 
 package com.github.abilityapi.ability;
 
+import com.github.abilityapi.user.User;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
-public interface Ability extends Listener {
+public abstract class Ability implements Listener {
 
-    void start();
+    private final AbilityProvider provider;
+    private final User user;
+    private final Player player;
 
-    void update();
+    public Ability(AbilityProvider provider, User user) {
+        this.provider = provider;
+        this.user = user;
+        this.player = user.getPlayer();
+    }
 
-    void stop();
+    public Ability(AbilityProvider provider, Player player) {
+        this.provider = provider;
+        this.user = User.get(player);
+        this.player = player;
+    }
 
-    boolean isExecuting();
+    public abstract void start();
+
+    public abstract void update();
+
+    public abstract void stop();
+
+    public abstract boolean isExecuting();
+
+    public AbilityProvider getProvider() {
+        return provider;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
 
 }
