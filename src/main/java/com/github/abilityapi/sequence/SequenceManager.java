@@ -83,4 +83,14 @@ public class SequenceManager implements SequenceInvoker, AbilityRegistry {
         blueprints.add(provider.getSequence());
     }
 
+    @Override
+    public void unregister(AbilityProvider provider) {
+        blueprints.removeIf(blueprint -> blueprint.getProvider().equals(provider));
+    }
+
+    @Override
+    public void unregister(Class<? extends AbilityProvider> providerClass) {
+        blueprints.removeIf(blueprint -> blueprint.getProvider().getClass().equals(providerClass));
+    }
+
 }
