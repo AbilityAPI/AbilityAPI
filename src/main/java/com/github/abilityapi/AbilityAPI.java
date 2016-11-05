@@ -18,6 +18,7 @@ import com.github.abilityapi.sequence.SequenceInvoker;
 import com.github.abilityapi.sequence.SequenceManager;
 import com.github.abilityapi.services.AbilityService;
 import com.github.abilityapi.services.SequenceService;
+import com.github.abilityapi.services.UserService;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ public class AbilityAPI extends JavaPlugin {
     private final MetricService metricService = new MetricService(this);
     private final AbilityService abilityService = new AbilityService(this, abilityManager);
     private final SequenceService sequenceService = new SequenceService(this, sequenceManager);
+    private final UserService userService = new UserService(this);
 
     private final List<Service> services = new ArrayList<>();
 
@@ -47,6 +49,7 @@ public class AbilityAPI extends JavaPlugin {
         services.add(metricService);
         services.add(abilityService);
         services.add(sequenceService);
+        services.add(userService);
         services.forEach(Service::start);
     }
 
