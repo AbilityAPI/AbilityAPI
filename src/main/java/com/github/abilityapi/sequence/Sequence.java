@@ -12,8 +12,11 @@
 package com.github.abilityapi.sequence;
 
 import com.github.abilityapi.ability.AbilityProvider;
+import com.github.abilityapi.events.SequenceFailEvent;
+import com.github.abilityapi.events.SequenceSucceedEvent;
 import com.github.abilityapi.sequence.action.Action;
 import com.github.abilityapi.user.User;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -48,18 +51,36 @@ public class Sequence {
 
             long now = System.currentTimeMillis();
 
-            if (!action.getEvent().equals(event.getClass())
-                    || last + ((action.getDelay() / 20) * 1000) > now
-                    || last + ((action.getExpire() / 20) * 1000) < now) {
-                cancelled = action.fail(player, event);
-                return false;
+//            if (!action.getEvent().equals(event.getClass())
+//                    || last + ((action.getDelay() / 20) * 1000) > now
+//                    || last + ((action.getExpire() / 20) * 1000) < now) {
+//                cancelled = action.fail(player, event);
+//                return false;
+//            }
+
+            if (!action.getEvent().equals(event.getClass())) {
+                return fail(player, event, action, SequenceFailEvent.SequenceFailReason.EVENT);
+            }
+
+            if (last + ((action.getDelay() / 20) * 1000) > now) {
+                return fail(player, event, action, SequenceFailEvent.SequenceFailReason.DELAY);
+            }
+
+            if (last + ((action.getExpire() / 20) * 1000) < now) {
+                return fail(player, event, action, SequenceFailEvent.SequenceFailReason.EXPIRE);
             }
 
             //noinspection unchecked
             Action<T> tAction = (Action<T>) action;
 
             if (!tAction.testConditions(player, event)) {
-                cancelled = action.fail(player, event);
+                return fail(player, event, tAction, SequenceFailEvent.SequenceFailReason.CONDITION);
+            }
+
+            User user = User.get(player);
+            SequenceSucceedEvent attempt = new SequenceSucceedEvent(user, this, event);
+            Bukkit.getPluginManager().callEvent(attempt);
+            if (attempt.isCancelled()) {
                 return false;
             }
 
@@ -77,6 +98,16 @@ public class Sequence {
         }
 
         return true;
+    }
+
+    public boolean fail(Player player, Event event, Action action, SequenceFailEvent.SequenceFailReason reason) {
+        cancelled = action.fail(player, event);
+
+        User user = User.get(player);
+        SequenceFailEvent failEvent = new SequenceFailEvent(user, this, event, reason);
+        Bukkit.getPluginManager().callEvent(failEvent);
+
+        return false;
     }
 
     public boolean hasExpired() {

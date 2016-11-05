@@ -11,6 +11,8 @@
 
 package com.github.abilityapi.ability;
 
+import com.github.abilityapi.events.AbilityStartEvent;
+import com.github.abilityapi.events.AbilityStopEvent;
 import com.github.abilityapi.sequence.Sequence;
 import com.github.abilityapi.user.User;
 import org.bukkit.Bukkit;
@@ -31,6 +33,13 @@ public class AbilityManager {
 
     public void execute(User user, Sequence sequence, AbilityProvider provider) {
         Ability ability = provider.createInstance(this, sequence, user);
+
+        AbilityStartEvent attempt = new AbilityStartEvent(user, ability);
+        Bukkit.getPluginManager().callEvent(attempt);
+        if (attempt.isCancelled()) {
+            return;
+        }
+
         abilities.add(ability);
         user.getAbilities().add(ability);
 
@@ -56,6 +65,9 @@ public class AbilityManager {
 
     public void stop(Ability ability) {
         User user = ability.getUser();
+
+        AbilityStopEvent attempt = new AbilityStopEvent(user, ability);
+        Bukkit.getPluginManager().callEvent(attempt);
 
         HandlerList.unregisterAll(ability);
         ability.stop();

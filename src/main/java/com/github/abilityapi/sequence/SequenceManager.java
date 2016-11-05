@@ -14,7 +14,11 @@ package com.github.abilityapi.sequence;
 import com.github.abilityapi.ability.AbilityManager;
 import com.github.abilityapi.ability.AbilityProvider;
 import com.github.abilityapi.ability.AbilityRegistry;
+import com.github.abilityapi.events.SequenceBeginEvent;
+import com.github.abilityapi.events.SequenceFailEvent;
+import com.github.abilityapi.events.SequenceFinishEvent;
 import com.github.abilityapi.user.User;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -46,6 +50,12 @@ public class SequenceManager implements SequenceInvoker, AbilityRegistry {
                 return false;
             }
 
+            SequenceFinishEvent attempt = new SequenceFinishEvent(user, sequence);
+            Bukkit.getPluginManager().callEvent(attempt);
+            if (attempt.isCancelled()) {
+                return true;
+            }
+
             AbilityProvider provider = sequence.getProvider();
             abilityManager.execute(user, sequence, provider);
             return true;
@@ -57,6 +67,13 @@ public class SequenceManager implements SequenceInvoker, AbilityRegistry {
                 .filter(blueprint -> !currentlyExecuting.contains(blueprint))
                 .forEach(blueprint -> {
                     Sequence sequence = blueprint.create(user);
+
+                    SequenceBeginEvent attempt = new SequenceBeginEvent(user, sequence);
+                    Bukkit.getPluginManager().callEvent(attempt);
+                    if (attempt.isCancelled()) {
+                        return;
+                    }
+
                     if (sequence.pass(player, event)) {
                         if (sequence.isCancelled()) {
                             return;
