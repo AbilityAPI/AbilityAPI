@@ -1,1 +1,1 @@
-# AbilityAPI [![travis](https://travis-ci.org/curz46/abilityapi.svg?branch=master)](https://travis-ci.org/curz46/abilityapi)
+# AbilityAPI [![travis](https://travis-ci.org/AbilityAPI/abilityapi.svg?branch=master)](https://travis-ci.org/AbilityAPI/abilityapi)
