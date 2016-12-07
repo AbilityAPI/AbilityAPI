@@ -18,8 +18,8 @@ dependencies {
 }
 
 def pluginName = 'AbilityAPI'
-def spigotBuildCommand = 'java -jar buildtools.jar --rev 1.10'
-def spigotJarName = 'spigot-1.10.2.jar'
+def spigotBuildCommand = 'java -jar buildtools.jar --rev 1.11'
+def spigotJarName = 'spigot-1.11.jar'
 
 // Runs 'spigot' (if necessary), builds the plugin and moves it to the server plugin directory.
 task server(dependsOn: ['spigot', 'build']) << {
@@ -58,7 +58,7 @@ task spigot << {
         throw new RuntimeException('Failed to download file!', e)
     }
 
-    System.out.println('Building Spigot-1.10...')
+    System.out.println('Building ' + spigotJarName + "...")
     Runtime rt = Runtime.getRuntime()
     Process pr = rt.exec(spigotBuildCommand, null, tmp)
     BufferedReader br = new BufferedReader(new InputStreamReader(pr.getInputStream()))
@@ -71,6 +71,6 @@ task spigot << {
     }
 
     Files.copy(new FileInputStream(tmpJar), new FileOutputStream(serverJar))
-    System.out.println('Cleaning up...')
+    System.out.println('Cleaning up temporary files...')
     delete 'tmp' // tmp.delete() never works for some reason? Q-Q
 }
