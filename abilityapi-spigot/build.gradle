@@ -1,0 +1,28 @@
+archivesBaseName = 'abilityapi-spigot'
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+}
+
+dependencies {
+    compile("org.spigotmc:spigot-api:1.11-R0.1-SNAPSHOT") {
+        exclude module: "bungeecord-chat"
+    }
+}
+
+license {
+    header = file('../LICENSE')
+    include '**/*.java'
+
+    ignoreFailures = false
+    strictCheck = true
+
+    mapping {
+        java = 'SLASHSTAR_STYLE'
+    }
+}
+
+jar {
+    classifier = ''
+}

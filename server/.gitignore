@@ -1,8 +1,0 @@
-# Ignore everything...
-*
-**/*
-
-# Apart from...
-!.gitignore
-!start.bat
-!start.sh
