@@ -1,14 +1,26 @@
 /*
- * The MIT License (MIT)
- * Copyright (c) 2016 Chris Martin (OmniCypher-), Dylan Curzon (curz46), Connor Hartley (connorhartley)
+ * MIT License
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * Copyright (c) 2016 Chris Martin (OmniCypher-), Dylan Curzon (curz46), Connor Hartley (ConnorHartley)
  *
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
-
 /*
  * Copyright 2011-2013 Tyler Blair. All rights reserved.
  *
@@ -140,23 +152,23 @@ public class Metrics {
         this.plugin = plugin;
 
         // load the config
-        configurationFile = getConfigFile();
-        configuration = YamlConfiguration.loadConfiguration(configurationFile);
+        this.configurationFile = getConfigFile();
+        this.configuration = YamlConfiguration.loadConfiguration(this.configurationFile);
 
         // add some defaults
-        configuration.addDefault("opt-out", false);
-        configuration.addDefault("guid", UUID.randomUUID().toString());
-        configuration.addDefault("debug", false);
+        this.configuration.addDefault("opt-out", false);
+        this.configuration.addDefault("guid", UUID.randomUUID().toString());
+        this.configuration.addDefault("debug", false);
 
         // Do we need to create the file?
-        if (configuration.get("guid", null) == null) {
-            configuration.options().header("http://mcstats.org").copyDefaults(true);
-            configuration.save(configurationFile);
+        if (this.configuration.get("guid", null) == null) {
+            this.configuration.options().header("http://mcstats.org").copyDefaults(true);
+            this.configuration.save(this.configurationFile);
         }
 
         // Load the guid then
-        guid = configuration.getString("guid");
-        debug = configuration.getBoolean("debug", false);
+        this.guid = this.configuration.getString("guid");
+        this.debug = this.configuration.getBoolean("debug", false);
     }
 
     /**
@@ -175,7 +187,7 @@ public class Metrics {
         final Graph graph = new Graph(name);
 
         // Now we can add our graph
-        graphs.add(graph);
+        this.graphs.add(graph);
 
         // and return back
         return graph;
@@ -191,7 +203,7 @@ public class Metrics {
             throw new IllegalArgumentException("Graph cannot be null");
         }
 
-        graphs.add(graph);
+        this.graphs.add(graph);
     }
 
     /**
@@ -202,19 +214,19 @@ public class Metrics {
      * @return True if statistics measuring is running, otherwise false.
      */
     public boolean start() {
-        synchronized (optOutLock) {
+        synchronized (this.optOutLock) {
             // Did we opt out?
             if (isOptOut()) {
                 return false;
             }
 
             // Is metrics already running?
-            if (task != null) {
+            if (this.task != null) {
                 return true;
             }
 
             // Begin hitting the server with glorious data
-            task = plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, new Runnable() {
+            this.task = this.plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, new Runnable() {
 
                 private boolean firstPost = true;
 
@@ -258,23 +270,23 @@ public class Metrics {
      *
      * @return true if metrics should be opted out of it
      */
-    public boolean isOptOut() {
-        synchronized (optOutLock) {
+     public boolean isOptOut() {
+        synchronized (this.optOutLock) {
             try {
                 // Reload the metrics file
-                configuration.load(getConfigFile());
+                this.configuration.load(getConfigFile());
             } catch (IOException ex) {
-                if (debug) {
+                if (this.debug) {
                     Bukkit.getLogger().log(Level.INFO, "[Metrics] " + ex.getMessage());
                 }
                 return true;
             } catch (InvalidConfigurationException ex) {
-                if (debug) {
+                if (this.debug) {
                     Bukkit.getLogger().log(Level.INFO, "[Metrics] " + ex.getMessage());
                 }
                 return true;
             }
-            return configuration.getBoolean("opt-out", false);
+            return this.configuration.getBoolean("opt-out", false);
         }
     }
 
@@ -285,15 +297,15 @@ public class Metrics {
      */
     public void enable() throws IOException {
         // This has to be synchronized or it can collide with the check in the task.
-        synchronized (optOutLock) {
+        synchronized (this.optOutLock) {
             // Check if the server owner has already set opt-out, if not, set it.
             if (isOptOut()) {
-                configuration.set("opt-out", false);
-                configuration.save(configurationFile);
+                this.configuration.set("opt-out", false);
+                this.configuration.save(this.configurationFile);
             }
 
             // Enable Task, if it is not running
-            if (task == null) {
+            if (this.task == null) {
                 start();
             }
         }
@@ -306,17 +318,17 @@ public class Metrics {
      */
     public void disable() throws IOException {
         // This has to be synchronized or it can collide with the check in the task.
-        synchronized (optOutLock) {
+        synchronized (this.optOutLock) {
             // Check if the server owner has already set opt-out, if not, set it.
             if (!isOptOut()) {
-                configuration.set("opt-out", true);
-                configuration.save(configurationFile);
+                this.configuration.set("opt-out", true);
+                this.configuration.save(this.configurationFile);
             }
 
             // Disable Task, if it is running
-            if (task != null) {
-                task.cancel();
-                task = null;
+            if (this.task != null) {
+                this.task.cancel();
+                this.task = null;
             }
         }
     }
@@ -326,13 +338,13 @@ public class Metrics {
      *
      * @return the File object for the config file
      */
-    public File getConfigFile() {
+     public File getConfigFile() {
         // I believe the easiest way to get the base folder (e.g craftbukkit set via -P) for plugins to use
         // is to abuse the plugin object we already have
         // plugin.getDataFolder() => base/plugins/PluginA/
         // pluginsFolder => base/plugins/
         // The base is not necessarily relative to the startup directory.
-        File pluginsFolder = plugin.getDataFolder().getParentFile();
+        File pluginsFolder = this.plugin.getDataFolder().getParentFile();
 
         // return => base/plugins/PluginMetrics/config.yml
         return new File(new File(pluginsFolder, "PluginMetrics"), "config.yml");
@@ -352,7 +364,7 @@ public class Metrics {
                 return ((Player[])onlinePlayerMethod.invoke(Bukkit.getServer())).length;
             }
         } catch (Exception ex) {
-            if (debug) {
+            if (this.debug) {
                 Bukkit.getLogger().log(Level.INFO, "[Metrics] " + ex.getMessage());
             }
         }
@@ -365,7 +377,7 @@ public class Metrics {
      */
     private void postPlugin(final boolean isPing) throws IOException {
         // Server software specific section
-        PluginDescriptionFile description = plugin.getDescription();
+        PluginDescriptionFile description = this.plugin.getDescription();
         String pluginName = description.getName();
         boolean onlineMode = Bukkit.getServer().getOnlineMode(); // TRUE if online mode is enabled
         String pluginVersion = description.getVersion();
@@ -379,7 +391,7 @@ public class Metrics {
         json.append('{');
 
         // The plugin's description file containg all of the plugin data such as name, version, author, etc
-        appendJSONPair(json, "guid", guid);
+        appendJSONPair(json, "guid", this.guid);
         appendJSONPair(json, "plugin_version", pluginVersion);
         appendJSONPair(json, "server_version", serverVersion);
         appendJSONPair(json, "players_online", Integer.toString(playersOnline));
@@ -408,8 +420,8 @@ public class Metrics {
             appendJSONPair(json, "ping", "1");
         }
 
-        if (graphs.size() > 0) {
-            synchronized (graphs) {
+        if (this.graphs.size() > 0) {
+            synchronized (this.graphs) {
                 json.append(',');
                 json.append('"');
                 json.append("graphs");
@@ -419,11 +431,7 @@ public class Metrics {
 
                 boolean firstGraph = true;
 
-                final Iterator<Graph> iter = graphs.iterator();
-
-                while (iter.hasNext()) {
-                    Graph graph = iter.next();
-
+                for (Graph graph : this.graphs) {
                     StringBuilder graphJson = new StringBuilder();
                     graphJson.append('{');
 
@@ -479,7 +487,7 @@ public class Metrics {
 
         connection.setDoOutput(true);
 
-        if (debug) {
+        if (this.debug) {
             System.out.println("[Metrics] Prepared request for " + pluginName + " uncompressed=" + uncompressed.length + " compressed=" + compressed.length);
         }
 
@@ -507,12 +515,9 @@ public class Metrics {
         } else {
             // Is this the first update this hour?
             if (response.equals("1") || response.contains("This is your first update this hour")) {
-                synchronized (graphs) {
-                    final Iterator<Graph> iter = graphs.iterator();
+                synchronized (this.graphs) {
 
-                    while (iter.hasNext()) {
-                        final Graph graph = iter.next();
-
+                    for (Graph graph : this.graphs) {
                         for (Plotter plotter : graph.getPlotters()) {
                             plotter.reset();
                         }
@@ -526,9 +531,9 @@ public class Metrics {
      * GZip compress a string of bytes
      *
      * @param input
-     * @return
+     * @return zip
      */
-    public static byte[] gzip(String input) {
+     public static byte[] gzip(String input) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         GZIPOutputStream gzos = null;
 
@@ -599,7 +604,7 @@ public class Metrics {
      * Escape a string to create a valid JSON string
      *
      * @param text
-     * @return
+     * @return escaped JSON
      */
     private static String escapeJSON(String text) {
         StringBuilder builder = new StringBuilder();
@@ -654,7 +659,7 @@ public class Metrics {
     /**
      * Represents a custom graph on the website
      */
-    public static class Graph {
+     static class Graph {
 
         /**
          * The graph's name, alphanumeric and spaces only :) If it does not comply to the above when submitted, it is
@@ -676,8 +681,8 @@ public class Metrics {
          *
          * @return the Graph's name
          */
-        public String getName() {
-            return name;
+        String getName() {
+            return this.name;
         }
 
         /**
@@ -686,7 +691,7 @@ public class Metrics {
          * @param plotter the plotter to add to the graph
          */
         public void addPlotter(final Plotter plotter) {
-            plotters.add(plotter);
+            this.plotters.add(plotter);
         }
 
         /**
@@ -695,7 +700,7 @@ public class Metrics {
          * @param plotter the plotter to remove from the graph
          */
         public void removePlotter(final Plotter plotter) {
-            plotters.remove(plotter);
+            this.plotters.remove(plotter);
         }
 
         /**
@@ -703,7 +708,7 @@ public class Metrics {
          *
          * @return an unmodifiable {@link java.util.Set} of the plotter objects
          */
-        public Set<Plotter> getPlotters() {
+        Set<Plotter> getPlotters() {
             return Collections.unmodifiableSet(plotters);
         }
 
@@ -732,7 +737,7 @@ public class Metrics {
     /**
      * Interface used to collect custom data for a plugin
      */
-    public static abstract class Plotter {
+     static abstract class Plotter {
 
         /**
          * The plot's name
@@ -751,7 +756,7 @@ public class Metrics {
          *
          * @param name the name of the plotter to use, which will show up on the website
          */
-        public Plotter(final String name) {
+        Plotter(final String name) {
             this.name = name;
         }
 
@@ -762,21 +767,21 @@ public class Metrics {
          *
          * @return the current value for the point to be plotted.
          */
-        public abstract int getValue();
+        abstract int getValue();
 
         /**
          * Get the column name for the plotted point
          *
          * @return the plotted point's column name
          */
-        public String getColumnName() {
-            return name;
+        String getColumnName() {
+            return this.name;
         }
 
         /**
          * Called after the website graphs have been updated
          */
-        public void reset() {
+        void reset() {
         }
 
         @Override

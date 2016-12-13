@@ -1,8 +1,13 @@
-plugins {
-    id 'java'
-    id 'idea'
-    id 'eclipse'
-    id 'com.github.hierynomus.license' version '0.12.1'
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://plugins.gradle.org/m2/" }
+        jcenter()
+    }
+    dependencies {
+        classpath "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.13.1"
+    }
 }
 
 defaultTasks 'licenseFormat', 'build'
@@ -16,9 +21,22 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'idea'
     apply plugin: 'eclipse'
+    apply plugin: 'com.github.hierynomus.license'
     
     targetCompatibility = 1.8
     sourceCompatibility = 1.8
+
+    license {
+        header = new File(rootProject.projectDir, "LICENSE.txt")
+        include '**/*.java'
+
+        ignoreFailures = false
+        strictCheck = true
+
+        mapping {
+            java = 'SLASHSTAR_STYLE'
+        }
+    }
 
     if (JavaVersion.current().isJava8Compatible()) {
         // Java 8 turns on doclint which we fail
@@ -35,6 +53,10 @@ subprojects {
     task javadocJar(type: Jar, dependsOn: javadoc) {
         classifier = 'javadoc'
         from javadoc.destinationDir
+    }
+
+    jar {
+        classifier = ''
     }
 
     artifacts {

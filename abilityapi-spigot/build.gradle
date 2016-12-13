@@ -10,19 +10,3 @@ dependencies {
         exclude module: "bungeecord-chat"
     }
 }
-
-license {
-    header = file('../LICENSE')
-    include '**/*.java'
-
-    ignoreFailures = false
-    strictCheck = true
-
-    mapping {
-        java = 'SLASHSTAR_STYLE'
-    }
-}
-
-jar {
-    classifier = ''
-}

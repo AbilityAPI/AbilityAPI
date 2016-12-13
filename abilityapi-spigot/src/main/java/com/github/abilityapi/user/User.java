@@ -1,18 +1,29 @@
 /*
- * The MIT License (MIT)
- * Copyright (c) 2016 Chris Martin (OmniCypher-), Dylan Curzon (curz46), Connor Hartley (connorhartley)
+ * MIT License
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * Copyright (c) 2016 Chris Martin (OmniCypher-), Dylan Curzon (curz46), Connor Hartley (ConnorHartley)
  *
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
-
 package com.github.abilityapi.user;
 
 import com.github.abilityapi.ability.Ability;
-import com.github.abilityapi.ability.AbilityProvider;
 import com.github.abilityapi.sequence.SequenceHandle;
 import org.bukkit.entity.Player;
 
@@ -82,7 +93,7 @@ public final class User extends BaseUser {
 
     public <T> T getInstance(Class<T> clazz) {
         //noinspection unchecked
-        Optional<T> optional = (Optional<T>) instances.stream()
+        Optional<T> optional = (Optional<T>) this.instances.stream()
                 .filter(instance -> instance.getClass().equals(clazz))
                 .findFirst();
 
@@ -97,12 +108,12 @@ public final class User extends BaseUser {
             }
 
             try {
-                instance = constructor.newInstance(player);
+                instance = constructor.newInstance(this.player);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException ex) {
                 throw new InvalidUserBaseException("Failed to create a UserBase instance!");
             }
 
-            instances.add(instance);
+            this.instances.add(instance);
             return instance;
         }
 
@@ -111,10 +122,10 @@ public final class User extends BaseUser {
 
     /**
      * @param clazz The {@link Ability} class to filter for.
-     * @return True, if the {@link this.getAbilities(Class<? extends Ability>)} method returns any instances.
+     * @return True, if the user contains any {@link Ability} instances.
      */
     public boolean hasAbility(Class<? extends Ability> clazz) {
-        return !getAbilities().isEmpty();
+        return !this.getAbilities().isEmpty();
     }
 
     /**
@@ -122,7 +133,7 @@ public final class User extends BaseUser {
      * @return All executing {@link Ability} instances on this User, for a specific class.
      */
     public List<Ability> getAbilities(Class<? extends Ability> clazz) {
-        return abilities.stream()
+        return this.abilities.stream()
                 .filter(ability -> ability.getClass().equals(clazz))
                 .collect(Collectors.toList());
     }
@@ -131,11 +142,11 @@ public final class User extends BaseUser {
      * @return All executing {@link Ability} instances on this User.
      */
     public List<Ability> getAbilities() {
-        return abilities;
+        return this.abilities;
     }
 
     public SequenceHandle getSequenceHandle() {
-        return sequenceHandle;
+        return this.sequenceHandle;
     }
 
 }

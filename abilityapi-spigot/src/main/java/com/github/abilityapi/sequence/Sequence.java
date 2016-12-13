@@ -1,14 +1,26 @@
 /*
- * The MIT License (MIT)
- * Copyright (c) 2016 Chris Martin (OmniCypher-), Dylan Curzon (curz46), Connor Hartley (connorhartley)
+ * MIT License
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * Copyright (c) 2016 Chris Martin (OmniCypher-), Dylan Curzon (curz46), Connor Hartley (ConnorHartley)
  *
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
-
 package com.github.abilityapi.sequence;
 
 import com.github.abilityapi.ability.AbilityProvider;
@@ -44,19 +56,12 @@ public class Sequence {
     }
 
     public <T extends Event> boolean pass(Player player, T event) {
-        Iterator<Action> it = actions.iterator();
+        Iterator<Action> it = this.actions.iterator();
 
         if (it.hasNext()) {
             Action action = it.next();
 
             long now = System.currentTimeMillis();
-
-//            if (!action.getEvent().equals(event.getClass())
-//                    || last + ((action.getDelay() / 20) * 1000) > now
-//                    || last + ((action.getExpire() / 20) * 1000) < now) {
-//                cancelled = action.fail(player, event);
-//                return false;
-//            }
 
             if (!action.getEvent().equals(event.getClass())) {
                 return fail(player, event, action, SequenceFailEvent.SequenceFailReason.EVENT);
@@ -84,13 +89,13 @@ public class Sequence {
                 return false;
             }
 
-            last = System.currentTimeMillis();
-            successfulEvents.add(event);
+            this.last = System.currentTimeMillis();
+            this.successfulEvents.add(event);
             it.remove();
             tAction.succeed(player, event);
 
             if (!it.hasNext()) {
-                finished = true;
+                this.finished = true;
                 return true;
             }
 
@@ -100,8 +105,8 @@ public class Sequence {
         return true;
     }
 
-    public boolean fail(Player player, Event event, Action action, SequenceFailEvent.SequenceFailReason reason) {
-        cancelled = action.fail(player, event);
+    boolean fail(Player player, Event event, Action action, SequenceFailEvent.SequenceFailReason reason) {
+        this.cancelled = action.fail(player, event);
 
         User user = User.get(player);
         SequenceFailEvent failEvent = new SequenceFailEvent(user, this, event, reason);
@@ -110,35 +115,35 @@ public class Sequence {
         return false;
     }
 
-    public boolean hasExpired() {
-        if (actions.isEmpty()) {
+    boolean hasExpired() {
+        if (this.actions.isEmpty()) {
             return false;
         }
 
-        Action action = actions.get(0);
+        Action action = this.actions.get(0);
         long now = System.currentTimeMillis();
 
-        return action != null && last + ((action.getExpire() / 20) * 1000) < now;
+        return action != null && this.last + ((action.getExpire() / 20) * 1000) < now;
     }
 
-    public boolean isCancelled() {
-        return cancelled;
+    boolean isCancelled() {
+        return this.cancelled;
     }
 
-    public boolean isFinished() {
-        return finished;
+    boolean isFinished() {
+        return this.finished;
     }
 
     public User getUser() {
-        return user;
+        return this.user;
     }
 
     public AbilityProvider getProvider() {
-        return provider;
+        return this.provider;
     }
 
     public List<Event> getSuccessfulEvents() {
-        return successfulEvents;
+        return this.successfulEvents;
     }
 
 }

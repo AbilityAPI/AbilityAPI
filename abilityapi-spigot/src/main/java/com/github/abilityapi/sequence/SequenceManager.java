@@ -1,14 +1,26 @@
 /*
- * The MIT License (MIT)
- * Copyright (c) 2016 Chris Martin (OmniCypher-), Dylan Curzon (curz46), Connor Hartley (connorhartley)
+ * MIT License
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * Copyright (c) 2016 Chris Martin (OmniCypher-), Dylan Curzon (curz46), Connor Hartley (ConnorHartley)
  *
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
-
 package com.github.abilityapi.sequence;
 
 import com.github.abilityapi.ability.AbilityManager;
@@ -57,13 +69,13 @@ public class SequenceManager implements SequenceInvoker, AbilityRegistry {
             }
 
             AbilityProvider provider = sequence.getProvider();
-            abilityManager.execute(user, sequence, provider);
+            this.abilityManager.execute(user, sequence, provider);
             return true;
         });
 
         // 2. create new instance of every sequence, pass the event, check result
 
-        blueprints.stream()
+        this.blueprints.stream()
                 .filter(blueprint -> !currentlyExecuting.contains(blueprint))
                 .forEach(blueprint -> {
                     Sequence sequence = blueprint.create(user);
@@ -81,7 +93,7 @@ public class SequenceManager implements SequenceInvoker, AbilityRegistry {
 
                         if (sequence.isFinished()) {
                             AbilityProvider provider = sequence.getProvider();
-                            abilityManager.execute(user, sequence, provider);
+                            this.abilityManager.execute(user, sequence, provider);
                             return;
                         }
 
@@ -97,17 +109,17 @@ public class SequenceManager implements SequenceInvoker, AbilityRegistry {
 
     @Override
     public void register(AbilityProvider provider) {
-        blueprints.add(provider.getSequence());
+        this.blueprints.add(provider.getSequence());
     }
 
     @Override
     public void unregister(AbilityProvider provider) {
-        blueprints.removeIf(blueprint -> blueprint.getProvider().equals(provider));
+        this.blueprints.removeIf(blueprint -> blueprint.getProvider().equals(provider));
     }
 
     @Override
     public void unregister(Class<? extends AbilityProvider> providerClass) {
-        blueprints.removeIf(blueprint -> blueprint.getProvider().getClass().equals(providerClass));
+        this.blueprints.removeIf(blueprint -> blueprint.getProvider().getClass().equals(providerClass));
     }
 
 }

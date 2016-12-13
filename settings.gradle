@@ -1,3 +1,4 @@
 rootProject.name = 'abilityapi'
 
 include 'abilityapi-spigot'
+include 'abilityapi-sponge'

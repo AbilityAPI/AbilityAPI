@@ -1,14 +1,26 @@
 /*
- * The MIT License (MIT)
- * Copyright (c) 2016 Chris Martin (OmniCypher-), Dylan Curzon (curz46), Connor Hartley (connorhartley)
+ * MIT License
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * Copyright (c) 2016 Chris Martin (OmniCypher-), Dylan Curzon (curz46), Connor Hartley (ConnorHartley)
  *
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
-
 package com.github.abilityapi.sequence.action;
 
 import org.bukkit.entity.Player;
@@ -33,7 +45,8 @@ public class Action<T extends Event> {
         this.event = event;
     }
 
-    public Action(Class<T> event, Condition<T>... conditions) {
+    @SafeVarargs
+    Action(Class<T> event, Condition<T>... conditions) {
         this(event);
         this.conditions.addAll(Arrays.asList(conditions));
     }
@@ -43,25 +56,25 @@ public class Action<T extends Event> {
         this.conditions.addAll(conditions);
     }
 
-    public void addCondition(Condition<T> condition) {
-        conditions.add(condition);
+    void addCondition(Condition<T> condition) {
+        this.conditions.add(condition);
     }
 
-    public void setDelay(int delay) {
+    void setDelay(int delay) {
         this.delay = delay;
     }
 
-    public void setExpire(int expire) {
+    void setExpire(int expire) {
         this.expire = expire;
     }
 
     public void succeed(Player player, Event event) {
-        successListeners.forEach(runnable -> runnable.test(player, event));
+        this.successListeners.forEach(runnable -> runnable.test(player, event));
     }
 
     public boolean fail(Player player, Event event) {
         // true if should cancel
-        return failureListeners.stream()
+        return this.failureListeners.stream()
                 .filter(callback -> callback.test(player, event))
                 .findFirst()
                 .isPresent();
@@ -69,34 +82,34 @@ public class Action<T extends Event> {
 
     public boolean testConditions(Player player, T event) {
         // fails if one present
-        return !conditions.stream()
+        return !this.conditions.stream()
                 .filter(condition -> !condition.test(player, event)) // present if one fails
                 .findFirst()
                 .isPresent();
     }
 
     public Class<T> getEvent() {
-        return event;
+        return this.event;
     }
 
     public List<Condition<T>> getConditions() {
-        return conditions;
+        return this.conditions;
     }
 
     public int getDelay() {
-        return delay;
+        return this.delay;
     }
 
     public int getExpire() {
-        return expire;
+        return this.expire;
     }
 
-    public void onSuccess(Condition condition) {
-        successListeners.add(condition);
+    void onSuccess(Condition condition) {
+        this.successListeners.add(condition);
     }
 
-    public void onFailure(Condition condition) {
-        failureListeners.add(condition);
+    void onFailure(Condition condition) {
+        this.failureListeners.add(condition);
     }
 
 }

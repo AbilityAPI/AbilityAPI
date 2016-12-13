@@ -1,0 +1,16 @@
+plugins {
+    id 'org.spongepowered.plugin' version '0.7'
+}
+
+archivesBaseName = 'abilityapi-sponge'
+
+sponge.plugin.id = 'abilityapi'
+
+repositories {
+    mavenCentral()
+    maven { url 'http://repo.spongepowered.org/maven/' }
+}
+
+dependencies {
+    compile 'org.spongepowered:spongeapi:6.0.0-SNAPSHOT'
+}
