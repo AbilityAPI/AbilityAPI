@@ -23,5 +23,46 @@
  */
 package com.github.abilityapi.events;
 
-public class AbilityStopEvent {
+import com.github.abilityapi.ability.Ability;
+import com.github.abilityapi.user.User;
+import org.spongepowered.api.event.Cancellable;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.impl.AbstractEvent;
+
+public class AbilityStopEvent extends AbstractEvent implements Cancellable {
+
+    private final Cause cause;
+    private final User user;
+    private final Ability ability;
+    private boolean cancelled = false;
+
+    public AbilityStopEvent(User user, Ability ability, Cause cause) {
+        this.user = user;
+        this.ability = ability;
+        this.cause = cause;
+    }
+
+    public User getUser() {
+        return this.user;
+    }
+
+    public Ability getAbility() {
+        return this.ability;
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return this.cancelled;
+    }
+
+    @Override
+    public void setCancelled(boolean cancel) {
+        this.cancelled = cancel;
+    }
+
+    @Override
+    public Cause getCause() {
+        return this.cause;
+    }
+
 }

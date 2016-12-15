@@ -24,9 +24,12 @@
 package com.github.abilityapi.ability;
 
 import com.github.abilityapi.sequence.Sequence;
+import com.github.abilityapi.sequence.SequenceBlueprint;
 import com.github.abilityapi.user.User;
 
 public interface AbilityProvider {
+
+    SequenceBlueprint getSequence();
 
     Ability createInstance(AbilityManager manager, Sequence sequence, User user);
 

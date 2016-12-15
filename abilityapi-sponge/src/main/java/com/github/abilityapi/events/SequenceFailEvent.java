@@ -29,8 +29,9 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Event;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.entity.living.humanoid.player.TargetPlayerEvent;
+import org.spongepowered.api.event.impl.AbstractEvent;
 
-public class SequenceFailEvent implements TargetPlayerEvent {
+public class SequenceFailEvent extends AbstractEvent implements TargetPlayerEvent {
 
     private final User user;
     private final Sequence sequence;

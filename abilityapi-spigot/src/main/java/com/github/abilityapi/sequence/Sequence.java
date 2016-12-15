@@ -67,11 +67,11 @@ public class Sequence {
                 return fail(player, event, action, SequenceFailEvent.SequenceFailReason.EVENT);
             }
 
-            if (last + ((action.getDelay() / 20) * 1000) > now) {
+            if (this.last + ((action.getDelay() / 20) * 1000) > now) {
                 return fail(player, event, action, SequenceFailEvent.SequenceFailReason.DELAY);
             }
 
-            if (last + ((action.getExpire() / 20) * 1000) < now) {
+            if (this.last + ((action.getExpire() / 20) * 1000) < now) {
                 return fail(player, event, action, SequenceFailEvent.SequenceFailReason.EXPIRE);
             }
 

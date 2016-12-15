@@ -30,8 +30,9 @@ import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.Event;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.entity.living.humanoid.player.TargetPlayerEvent;
+import org.spongepowered.api.event.impl.AbstractEvent;
 
-public class SequenceSucceedEvent implements TargetPlayerEvent, Cancellable {
+public class SequenceSucceedEvent extends AbstractEvent implements Cancellable {
 
     private final User user;
     private final Sequence sequence;
@@ -46,9 +47,16 @@ public class SequenceSucceedEvent implements TargetPlayerEvent, Cancellable {
         this.cause = cause;
     }
 
-    @Override
-    public Player getTargetEntity() {
-        return user.getPlayer();
+    public User getUser() {
+        return this.user;
+    }
+
+    public Sequence getSequence() {
+        return this.sequence;
+    }
+
+    public Event getSucceededEvent() {
+        return this.succeededEvent;
     }
 
     @Override
