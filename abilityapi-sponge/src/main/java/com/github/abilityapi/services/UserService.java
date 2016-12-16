@@ -30,6 +30,8 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.entity.living.humanoid.player.TargetPlayerEvent;
 import org.spongepowered.api.event.filter.cause.First;
+import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.network.PlayerConnection;
 
 public class UserService implements Service {
 
@@ -50,7 +52,7 @@ public class UserService implements Service {
     }
 
     @Listener
-    public void onPlayerQuit(TargetPlayerEvent event, @First Player player) {
+    public void onPlayerQuit(ClientConnectionEvent.Disconnect event, @First Player player) {
         if(!player.isOnline()) {
             User.obliterate(player);
         }
