@@ -2,6 +2,12 @@
 abilityapi.iws
 abilityapi.ipr
 abilityapi.iml
+abilityapi-spigot/abilityapi-spigot.iws
+abilityapi-spigot/abilityapi-spigot.ipr
+abilityapi-spigot/abilityapi-spigot.iml
+abilityapi-sponge/abilityapi-sponge.iws
+abilityapi-sponge/abilityapi-sponge.ipr
+abilityapi-sponge/abilityapi-sponge.iml
 
 .gradle/
 build/

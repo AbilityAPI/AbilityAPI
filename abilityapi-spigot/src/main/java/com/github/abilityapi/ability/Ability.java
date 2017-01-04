@@ -45,13 +45,13 @@ public abstract class Ability implements Listener {
         this.player = player;
     }
 
-    abstract void start();
+    public abstract void start();
 
-    abstract void update();
+    public abstract void update();
 
-    abstract void stop();
+    public abstract void stop();
 
-    abstract boolean isExecuting();
+    public abstract boolean isExecuting();
 
     public AbilityProvider getProvider() {
         return this.provider;

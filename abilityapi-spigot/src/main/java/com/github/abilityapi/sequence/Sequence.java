@@ -105,7 +105,7 @@ public class Sequence {
         return true;
     }
 
-    boolean fail(Player player, Event event, Action action, SequenceFailEvent.SequenceFailReason reason) {
+    public boolean fail(Player player, Event event, Action action, SequenceFailEvent.SequenceFailReason reason) {
         this.cancelled = action.fail(player, event);
 
         User user = User.get(player);
@@ -115,7 +115,7 @@ public class Sequence {
         return false;
     }
 
-    boolean hasExpired() {
+    public boolean hasExpired() {
         if (this.actions.isEmpty()) {
             return false;
         }
@@ -126,11 +126,11 @@ public class Sequence {
         return action != null && this.last + ((action.getExpire() / 20) * 1000) < now;
     }
 
-    boolean isCancelled() {
+    public boolean isCancelled() {
         return this.cancelled;
     }
 
-    boolean isFinished() {
+    public boolean isFinished() {
         return this.finished;
     }
 

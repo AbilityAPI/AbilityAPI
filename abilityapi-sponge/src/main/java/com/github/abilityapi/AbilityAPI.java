@@ -23,12 +23,20 @@
  */
 package com.github.abilityapi;
 
+import com.github.abilityapi.ability.AbilityManager;
+import com.github.abilityapi.sequence.SequenceManager;
+import com.github.abilityapi.services.AbilityService;
+import com.github.abilityapi.services.SequenceService;
+import com.github.abilityapi.services.UserService;
 import com.google.inject.Inject;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Plugin(
         id = "abilityapi",
@@ -42,6 +50,8 @@ import org.spongepowered.api.plugin.PluginContainer;
 )
 public class AbilityAPI {
 
+    private static AbilityAPI instance;
+
     @Inject
     private PluginContainer pluginContainer;
 
@@ -49,14 +59,33 @@ public class AbilityAPI {
         return this.pluginContainer;
     }
 
+    private final AbilityManager abilityManager = new AbilityManager(this);
+    private final SequenceManager sequenceManager = new SequenceManager(abilityManager, this);
+
+    private final AbilityService abilityService = new AbilityService(this, abilityManager);
+    private final SequenceService sequenceService = new SequenceService(this, sequenceManager);
+    private final UserService userService = new UserService(this);
+
+    private final List<Service> services = new ArrayList<>();
+
+    public static AbilityAPI get() {
+        return instance;
+    }
+
     @Listener
     public void onServerStart(GameStartingServerEvent event) {
+        instance = this;
 
+        this.services.add(this.abilityService);
+        this.services.add(this.sequenceService);
+        this.services.add(this.userService);
+        this.services.forEach(Service::start);
     }
 
     @Listener
     public void onServerStop(GameStoppingServerEvent event) {
-
+        this.services.forEach(Service::stop);
+        instance = null;
     }
 
 }

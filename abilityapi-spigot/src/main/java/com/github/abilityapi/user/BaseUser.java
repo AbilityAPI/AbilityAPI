@@ -25,7 +25,7 @@ package com.github.abilityapi.user;
 
 import org.bukkit.entity.Player;
 
-abstract class BaseUser {
+public abstract class BaseUser {
 
     protected Player player;
 
