@@ -29,7 +29,7 @@ public abstract class BaseUser {
 
     protected Player player;
 
-    BaseUser(Player player) {
+    public BaseUser(Player player) {
         this.player = player;
     }
 
