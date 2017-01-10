@@ -26,7 +26,7 @@ package com.github.abilityapi.sequence.action;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
-interface Condition<T extends Event> {
+public interface Condition<T extends Event> {
 
     boolean test(Player player, T event);
 
