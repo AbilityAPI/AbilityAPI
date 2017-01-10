@@ -26,7 +26,7 @@ package com.github.abilityapi.sequence.action;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Event;
 
-interface Condition<T extends Event> {
+public interface Condition<T extends Event> {
 
     boolean test(Player player, T event);
 
