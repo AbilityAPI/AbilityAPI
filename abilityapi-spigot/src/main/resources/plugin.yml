@@ -10,5 +10,5 @@
 #
 
 name: AbilityAPI
-version: 0.2-ALPHA
-main: com.github.abilityapi.AbilityAPI
+version: 0.3
+main: com.github.abilityapi.abilityapi.AbilityAPI

@@ -1,3 +1,8 @@
+plugins {
+    id 'maven-publish'
+    id 'com.jfrog.bintray' version '1.7.3'
+}
+
 archivesBaseName = 'abilityapi-spigot'
 
 repositories {
@@ -8,5 +13,34 @@ repositories {
 dependencies {
     compile("org.spigotmc:spigot-api:1.11-R0.1-SNAPSHOT") {
         exclude module: "bungeecord-chat"
+    }
+}
+
+publishing {
+    publications {
+        PluginSpigot(MavenPublication) {
+            from components.java
+            groupId 'com.github.abilityapi'
+            artifactId 'abilityapi-spigot'
+            version '0.3'
+        }
+    }
+}
+
+bintray {
+    user = System.getProperty('BIN_USER')
+    key = System.getProperty('BIN_KEY')
+    publications = [ 'PluginSpigot' ]
+    pkg {
+        repo = 'maven'
+        name = 'abilityapi'
+        userOrg = 'abilityapi'
+        licenses = [ 'MIT' ]
+        vcsUrl = 'https://github.com/AbilityAPI/abilityapi.git'
+        publicDownloadNumbers = true
+        version {
+            name = 'abilityapi-spigot-0.3'
+            desc = 'abilityapi-spigot'
+        }
     }
 }

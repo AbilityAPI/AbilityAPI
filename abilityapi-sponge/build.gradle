@@ -1,5 +1,8 @@
 plugins {
-    id 'org.spongepowered.plugin' version '0.7'
+    id 'maven-publish'
+    id 'signing'
+    id 'com.jfrog.bintray' version '1.7.3'
+    id 'org.spongepowered.plugin' version '0.8.1'
 }
 
 archivesBaseName = 'abilityapi-sponge'
@@ -13,4 +16,38 @@ repositories {
 
 dependencies {
     compile 'org.spongepowered:spongeapi:6.0.0-SNAPSHOT'
+}
+
+signing {
+    required false
+    sign configurations.archives
+}
+
+publishing {
+    publications {
+        PluginSponge(MavenPublication) {
+            from components.java
+            groupId 'com.github.abilityapi'
+            artifactId 'abilityapi-sponge'
+            version '0.3'
+        }
+    }
+}
+
+bintray {
+    user = System.getProperty('BIN_USER')
+    key = System.getProperty('BIN_KEY')
+    publications = [ 'PluginSponge' ]
+    pkg {
+        repo = 'maven'
+        name = 'abilityapi'
+        userOrg = 'abilityapi'
+        licenses = [ 'MIT' ]
+        vcsUrl = 'https://github.com/AbilityAPI/abilityapi.git'
+        publicDownloadNumbers = true
+        version {
+            name = 'abilityapi-sponge-0.3'
+            desc = 'abilityapi-sponge'
+        }
+    }
 }

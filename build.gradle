@@ -14,7 +14,7 @@ defaultTasks 'licenseFormat', 'build'
 
 allprojects {
     group = 'com.github.abilityapi'
-    version = '0.2-SNAPSHOT'
+    version = '0.3-SNAPSHOT'
 }
 
 subprojects {
