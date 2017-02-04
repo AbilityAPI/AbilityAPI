@@ -1,3 +1,26 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2016 Chris Martin (OmniCypher-), Dylan Curzon (curz46), Connor Hartley (ConnorHartley)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package com.github.abilityapi.abilityapi.external;
 
 import com.google.gson.JsonArray;
@@ -831,7 +854,7 @@ public class Metrics {
         AUSTRIA("AT", "Austria"),
         AUSTRALIA("AU", "Australia"),
         ARUBA("AW", "Aruba"),
-        ÅLAND_ISLANDS("AX", "Åland Islands"),
+        ALAND_ISLANDS("AX", "Åland Islands"),
         AZERBAIJAN("AZ", "Azerbaijan"),
         BOSNIA_AND_HERZEGOVINA("BA", "Bosnia and Herzegovina"),
         BARBADOS("BB", "Barbados"),
@@ -842,7 +865,7 @@ public class Metrics {
         BAHRAIN("BH", "Bahrain"),
         BURUNDI("BI", "Burundi"),
         BENIN("BJ", "Benin"),
-        SAINT_BARTHÉLEMY("BL", "Saint Barthélemy"),
+        SAINT_BARTHELEMY("BL", "Saint Barthélemy"),
         BERMUDA("BM", "Bermuda"),
         BRUNEI("BN", "Brunei"),
         BOLIVIA("BO", "Bolivia"),
@@ -860,7 +883,7 @@ public class Metrics {
         CENTRAL_AFRICAN_REPUBLIC("CF", "Central African Republic"),
         CONGO("CG", "Congo"),
         SWITZERLAND("CH", "Switzerland"),
-        CÔTE_D_IVOIRE("CI", "Côte d'Ivoire"),
+        COTE_D_IVOIRE("CI", "Côte d'Ivoire"),
         COOK_ISLANDS("CK", "Cook Islands"),
         CHILE("CL", "Chile"),
         CAMEROON("CM", "Cameroon"),
@@ -869,7 +892,7 @@ public class Metrics {
         COSTA_RICA("CR", "Costa Rica"),
         CUBA("CU", "Cuba"),
         CAPE_VERDE("CV", "Cape Verde"),
-        CURAÇAO("CW", "Curaçao"),
+        CURACAO("CW", "Curaçao"),
         CHRISTMAS_ISLAND("CX", "Christmas Island"),
         CYPRUS("CY", "Cyprus"),
         CZECH_REPUBLIC("CZ", "Czech Republic"),
