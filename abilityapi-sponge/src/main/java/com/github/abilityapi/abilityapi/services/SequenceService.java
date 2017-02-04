@@ -24,6 +24,7 @@
 package com.github.abilityapi.abilityapi.services;
 
 import com.github.abilityapi.abilityapi.Service;
+import com.github.abilityapi.abilityapi.sequence.SequenceListener;
 import com.github.abilityapi.abilityapi.sequence.SequenceManager;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.Task;
@@ -32,26 +33,30 @@ public class SequenceService implements Service {
 
     private final Object plugin;
     private final SequenceManager sequenceManager;
-//    private final SequenceListener listener;
-    private Task.Builder taskBuilder = Sponge.getScheduler().createTaskBuilder();
+    private final SequenceListener listener;
+
+    private Task.Builder taskBuilder = Task.builder();
     private Task task;
 
     public SequenceService(Object plugin, SequenceManager sequenceManager) {
         this.plugin = plugin;
         this.sequenceManager = sequenceManager;
-//        this.listener = new SequenceListener(sequenceManager);
+        this.listener = new SequenceListener(this.sequenceManager);
+
+        Sponge.getEventManager().registerListeners(this.plugin, this.sequenceManager);
     }
 
     @Override
     public void start() {
-//        Sponge.getEventManager().registerListeners(this.plugin, this.listener);
-
-        this.task = taskBuilder.execute(this.sequenceManager::cleanup).intervalTicks(1).submit(this.plugin);
+        this.task = taskBuilder.execute(this.sequenceManager::cleanup).intervalTicks(1)
+                .name("AbilityAPI - Sequence Service Task").submit(this.plugin);
     }
 
     @Override
     public void stop() {
-//        Sponge.getEventManager().unregisterListeners(this.listener);
+        if (this.task != null) this.task.cancel();
+
+        Sponge.getEventManager().unregisterListeners(this.listener);
     }
 
 }

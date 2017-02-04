@@ -46,12 +46,12 @@ public class AbilityService implements Service {
         this.task = taskBuilder.execute(() -> {
             abilityManager.cleanup();
             abilityManager.updateAll();
-        }).intervalTicks(1).submit(plugin);
+        }).intervalTicks(1).name("AbilityAPI - Ability Service Task").submit(this.plugin);
     }
 
     @Override
     public void stop() {
-        this.task.cancel();
+        if (this.task != null) this.task.cancel();
     }
 
 }

@@ -24,6 +24,7 @@
 package com.github.abilityapi.abilityapi;
 
 import com.github.abilityapi.abilityapi.ability.AbilityManager;
+import com.github.abilityapi.abilityapi.external.Metrics;
 import com.github.abilityapi.abilityapi.sequence.SequenceManager;
 import com.github.abilityapi.abilityapi.services.AbilityService;
 import com.github.abilityapi.abilityapi.services.SequenceService;
@@ -52,6 +53,9 @@ import java.util.List;
 public class AbilityAPI {
 
     private static AbilityAPI instance;
+
+    @Inject
+    private Metrics metrics;
 
     @Inject
     private PluginContainer pluginContainer;

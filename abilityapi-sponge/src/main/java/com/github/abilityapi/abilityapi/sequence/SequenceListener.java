@@ -24,4 +24,11 @@
 package com.github.abilityapi.abilityapi.sequence;
 
 public class SequenceListener {
+
+    private final SequenceManager sequenceManager;
+
+    public SequenceListener(SequenceManager sequenceManager) {
+        this.sequenceManager = sequenceManager;
+    }
+
 }
