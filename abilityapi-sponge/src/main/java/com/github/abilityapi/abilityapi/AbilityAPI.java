@@ -52,8 +52,6 @@ import java.util.List;
 )
 public class AbilityAPI {
 
-    private static AbilityAPI instance;
-
     @Inject
     private Metrics metrics;
 
@@ -64,22 +62,23 @@ public class AbilityAPI {
         return this.pluginContainer;
     }
 
-    private final AbilityManager abilityManager = new AbilityManager(this);
-    private final SequenceManager sequenceManager = new SequenceManager(abilityManager, this);
+    private AbilityManager abilityManager;
+    private SequenceManager sequenceManager;
 
-    private final AbilityService abilityService = new AbilityService(this, abilityManager);
-    private final SequenceService sequenceService = new SequenceService(this, sequenceManager);
-    private final UserService userService = new UserService(this);
+    private AbilityService abilityService;
+    private SequenceService sequenceService;
+    private UserService userService;
 
     private final List<Service> services = new ArrayList<>();
 
-    public static AbilityAPI get() {
-        return instance;
-    }
-
     @Listener
     public void onServerStart(GameStartingServerEvent event) {
-        instance = this;
+        this.abilityManager = new AbilityManager(this);
+        this.sequenceManager = new SequenceManager(this.abilityManager, this);
+
+        this.abilityService = new AbilityService(this, this.abilityManager);
+        this.sequenceService = new SequenceService(this, this.sequenceManager);
+        this.userService = new UserService(this);
 
         this.services.add(this.abilityService);
         this.services.add(this.sequenceService);
@@ -90,7 +89,6 @@ public class AbilityAPI {
     @Listener
     public void onServerStop(GameStoppingServerEvent event) {
         this.services.forEach(Service::stop);
-        instance = null;
     }
 
 }
