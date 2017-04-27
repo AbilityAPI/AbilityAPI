@@ -24,10 +24,8 @@
 package com.github.abilityapi.abilityapi.metrics;
 
 import com.github.abilityapi.abilityapi.Service;
-import com.github.abilityapi.abilityapi.external.Metrics;
+import org.bstats.MetricsLite;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.io.IOException;
 
 public class MetricService implements Service {
 
@@ -39,12 +37,7 @@ public class MetricService implements Service {
 
     @Override
     public void start() {
-        try {
-            Metrics metrics = new Metrics(this.plugin);
-            metrics.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        MetricsLite metrics = new MetricsLite(this.plugin);
     }
 
     @Override

@@ -8,12 +8,14 @@ archivesBaseName = 'abilityapi-spigot'
 repositories {
     mavenCentral()
     maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    maven { url 'https://repo.bstats.org/content/groups/public/' }
 }
 
 dependencies {
-    compile("org.spigotmc:spigot-api:1.11-R0.1-SNAPSHOT") {
+    compile("org.spigotmc:spigot-api:1.11-R0.2-SNAPSHOT") {
         exclude module: "bungeecord-chat"
     }
+    compile 'org.bstats:bstats-bukkit-lite:1.2-SNAPSHOT'
 }
 
 publishing {
@@ -41,6 +43,15 @@ bintray {
         version {
             name = 'abilityapi-spigot-0.3'
             desc = 'abilityapi-spigot'
+        }
+    }
+}
+
+shadowJar {
+    classifier = ''
+    dependencies {
+        relocate ('org.bstats', 'com.github.abilityapi.abilityapi.metrics') {
+            include(dependency('org.bstats:bstats-bukkit-lite'))
         }
     }
 }

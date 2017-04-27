@@ -24,12 +24,14 @@
 package com.github.abilityapi.abilityapi;
 
 import com.github.abilityapi.abilityapi.ability.AbilityManager;
-import com.github.abilityapi.abilityapi.external.Metrics;
 import com.github.abilityapi.abilityapi.sequence.SequenceManager;
 import com.github.abilityapi.abilityapi.services.AbilityService;
 import com.github.abilityapi.abilityapi.services.SequenceService;
 import com.github.abilityapi.abilityapi.services.UserService;
 import com.google.inject.Inject;
+
+import org.bstats.MetricsLite;
+
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
@@ -53,7 +55,7 @@ import java.util.List;
 public class AbilityAPI {
 
     @Inject
-    private Metrics metrics;
+    private MetricsLite metrics;
 
     @Inject
     private PluginContainer pluginContainer;
