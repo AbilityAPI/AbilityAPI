@@ -30,8 +30,7 @@ import com.github.abilityapi.abilityapi.services.SequenceService;
 import com.github.abilityapi.abilityapi.services.UserService;
 import com.google.inject.Inject;
 
-import org.bstats.MetricsLite;
-
+import org.bstats.sponge.MetricsLite;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;

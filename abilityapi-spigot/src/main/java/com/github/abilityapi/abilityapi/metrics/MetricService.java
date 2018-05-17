@@ -24,7 +24,7 @@
 package com.github.abilityapi.abilityapi.metrics;
 
 import com.github.abilityapi.abilityapi.Service;
-import org.bstats.MetricsLite;
+import org.bstats.bukkit.MetricsLite;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class MetricService implements Service {
